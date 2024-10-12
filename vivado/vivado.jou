@@ -1,0 +1,16 @@
+#-----------------------------------------------------------
+# Vivado v2023.2 (64-bit)
+# SW Build 4029153 on Fri Oct 13 20:14:34 MDT 2023
+# IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+# SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+# Start of session at: Sat Oct 12 10:53:48 2024
+# Process ID: 27588
+# Current directory: D:/_code/risc-proc/vivado
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent19276 D:\_code\risc-proc\vivado\risc-proc.xpr
+# Log file: D:/_code/risc-proc/vivado/vivado.log
+# Journal file: D:/_code/risc-proc/vivado\vivado.jou
+# Running On: DESKTOP-GOP6HTO, OS: Windows, CPU Frequency: 2895 MHz, CPU Physical cores: 16, Host memory: 25146 MB
+#-----------------------------------------------------------
+start_gui
+open_project -part xc7z010iclg225-1L D:/_code/risc-proc/vivado/risc-proc.xpr
+update_compile_order -fileset sources_1
