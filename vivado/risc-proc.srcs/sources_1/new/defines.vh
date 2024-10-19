@@ -8,7 +8,7 @@
 `define MEMSIZE (1<<`ASIZE)
 
 
-// OPCODE defines 
+// OPCODE defines
 `define ADD 4'b0001
 `define SUB 4'b0010
 
