@@ -1,0 +1,9 @@
+0.7
+2020.2
+May 22 2024
+19:03:11
+D:/_code/risc-proc/vivado/risc-proc.sim/sim_1/behav/xsim/glbl.v,1708598507,verilog,,,,glbl,,,,,,,,
+D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/seq_core_testbench.v,1730141164,verilog,,,D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core.vh,seq_core_testbench,,,../../../../risc-proc.srcs/sources_1/new,,,,,
+D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core.v,1730144482,verilog,,D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core_mem.v,D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core.vh,seq_core,,,../../../../risc-proc.srcs/sources_1/new,,,,,
+D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core.vh,1730142167,verilog,,,,,,,,,,,,
+D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core_mem.v,1730144384,verilog,,D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/seq_core_testbench.v,D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core.vh,seq_core_mem,,,../../../../risc-proc.srcs/sources_1/new,,,,,
