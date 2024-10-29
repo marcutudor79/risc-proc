@@ -32,17 +32,20 @@ module seq_core(
     output reg read,  // active 1
     output reg write, // active 1
     output reg[`A_SIZE-1:0]	address,
-    input  [`D_SIZE-1:0]	data_in,
-    output reg [`D_SIZE-1:0]data_out
+    input wire[`D_SIZE-1:0]	data_in,
+    output reg[`D_SIZE-1:0] data_out
 );
 
 // instantiate registers of seq_core
 reg [`D_SIZE-1:0] reg_block [0:`REG_BLOCK_SIZE-1];
 
+// instantiate mem buffer
+wire [`D_SIZE-1:0] mem_buff;
+
 // ALU instructions, JMPs, LOADs and HALT here
 always @(posedge clk) begin
     if (0 == rst) begin
-        pc <= 0;
+        pc <= 10'd0;
         reg_block[0] <= 0;
         reg_block[1] <= 1;
         reg_block[2] <= 2;
@@ -53,7 +56,7 @@ always @(posedge clk) begin
         reg_block[7] <= 7;
     end
     else begin    
-        pc <= pc + 1;
+        pc <= pc + 10'd1;
         
         casex(instruction[15:9])
         `NOP:       data_out = 0;
@@ -68,7 +71,7 @@ always @(posedge clk) begin
         `NOR:       reg_block[instruction[8:6]] <= ~(reg_block[instruction[5:3]] | reg_block[instruction[2:0]]);
         `NXOR:      reg_block[instruction[8:6]] <= ~(reg_block[instruction[5:3]] ^ reg_block[instruction[2:0]]);
         `SHIFTR:    reg_block[instruction[8:6]] <= reg_block[instruction[8:6]] >> instruction[5:0];
-        `SHIFTRA:   reg_block[instruction[8:6]] <= reg_block[instruction[8:6]] >>> instruction[5:0]; 
+        `SHIFTRA:   reg_block[instruction[8:6]] <= $signed(reg_block[instruction[8:6]]) >>> instruction[5:0]; 
         `SHIFTL:    reg_block[instruction[8:6]] <= reg_block[instruction[8:6]] << instruction[5:0];
         `JMP:       pc <= pc +  reg_block[instruction[2:0]];
         `JMPR:      pc <= pc + instruction[5:0];
@@ -100,7 +103,7 @@ always @(posedge clk) begin
                               pc <= pc + instruction[2:0];
                               end            
                     endcase
-         `LOAD:     reg_block[instruction[10:8]] <= data_in;
+         `LOAD:     reg_block[instruction[10:8]] <= mem_buff;
          `LOADC:    begin
                     // concatenate the first 24 bits from selected register with 8 bit constant
                     reg_block[instruction[10:8]] <= {reg_block[instruction[10:8]][`D_SIZE - 1:0], instruction[7:0]};
@@ -132,12 +135,13 @@ end
 
 // connect the seq_core to seq_core_mem
 seq_core_mem mem (
+    .rst(rst),
     .clk(clk),
     .read(read),
     .write(write),
     .address(address),
-    .data_out(data_in),
-    .data_in(data_out)
+    .dataout(mem_buff),
+    .datain(data_out)
 );
  
 endmodule
