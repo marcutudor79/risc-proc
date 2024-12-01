@@ -44,8 +44,8 @@ wire [`D_SIZE-1:0] mem_buff;
 
 // ALU instructions, JMPs, LOADs and HALT here
 always @(posedge clk) begin
-    if (0 == rst) begin
-        pc <= 10'd0;
+    if (1'b0 == rst) begin
+        pc <= 1'd0;
         reg_block[0] <= 0;
         reg_block[1] <= 1;
         reg_block[2] <= 2;
@@ -56,7 +56,9 @@ always @(posedge clk) begin
         reg_block[7] <= 7;
     end
     else begin    
-        pc <= pc + 10'd1;
+        if (instruction != `HALT) begin
+            pc <= pc + 10'd1;
+        end
         
         casex(instruction[15:9])
         `NOP:       data_out = 0;
@@ -73,34 +75,34 @@ always @(posedge clk) begin
         `SHIFTR:    reg_block[instruction[8:6]] <= reg_block[instruction[8:6]] >> instruction[5:0];
         `SHIFTRA:   reg_block[instruction[8:6]] <= $signed(reg_block[instruction[8:6]]) >>> instruction[5:0]; 
         `SHIFTL:    reg_block[instruction[8:6]] <= reg_block[instruction[8:6]] << instruction[5:0];
-        `JMP:       pc <= pc +  reg_block[instruction[2:0]];
+        `JMP:       pc <= reg_block[instruction[2:0]];
         `JMPR:      pc <= pc + instruction[5:0];
         `JMPcond:   case (instruction[11:9])
                         `N: if (reg_block[instruction[8:6]] < 0) begin
-                            pc <= pc + reg_block[instruction[2:0]];
+                            pc <= reg_block[instruction[2:0]];
                             end
                         `NN: if (reg_block[instruction[8:6]] >= 0) begin
-                            pc <= pc + reg_block[instruction[2:0]];
+                            pc <= reg_block[instruction[2:0]];
                             end
                         `Z: if (reg_block[instruction[8:6]] == 0) begin
-                            pc <= pc + reg_block[instruction[2:0]];
+                            pc <= reg_block[instruction[2:0]];
                             end
                         `NZ: if (reg_block[instruction[8:6]] != 0) begin
-                             pc <= pc + reg_block[instruction[2:0]];
+                             pc <= reg_block[instruction[2:0]];
                              end            
                     endcase
         `JMPRcond:  case (instruction[11:9])
                         `N: if (reg_block[instruction[8:6]] < 0) begin
-                            pc <= pc + instruction[2:0];
+                            pc <= pc + instruction[5:0];
                             end
                         `NN: if (reg_block[instruction[8:6]] >= 0) begin
-                            pc <= pc + instruction[2:0];
+                            pc <= pc + instruction[5:0];
                             end
                          `Z: if (reg_block[instruction[8:6]] == 0) begin
-                             pc <= pc + instruction[2:0];
+                             pc <= pc + instruction[5:0];
                              end
                          `NZ: if (reg_block[instruction[8:6]] != 0) begin
-                              pc <= pc + instruction[2:0];
+                              pc <= pc + instruction[5:0];
                               end            
                     endcase
          `LOAD:     reg_block[instruction[10:8]] <= mem_buff;

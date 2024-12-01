@@ -28,7 +28,6 @@ reg rst = 1;
 reg [`I_SIZE-1:0] instruction;
 reg [`D_SIZE-1:0] data_in;
 reg [`I_SIZE-1:0] opcode;
-reg [`A_SIZE-1:0] pc;
 
 // instaniate dut 
 seq_core seq_core 
@@ -188,7 +187,27 @@ initial begin
      // TC-19: Execute JMP
      opcode = `JMP;
      instruction = {opcode[6:3], 9'd0, `R1};
-     #10 `assert(seq_core.pc, seq_core.reg_block[`R1]);
+     #10 `assert(seq_core.pc, seq_core.reg_block[`R1])
+     
+     // TC-20: Execute JMPR
+     opcode = `JMPR;
+     instruction = {opcode[6:3], 6'd0, 6'd10};
+     #10 `assert(seq_core.pc, 20)
+     
+     // TC-21: Execute JMPcond
+     opcode = `JMPcond;
+     instruction = {opcode[6:3], `NN, `R0, 3'b0, `R3};
+     #10 `assert(seq_core.pc, seq_core.reg_block[`R3])
+     
+     
+     // TC-22: Execute JMPRcond
+     opcode = `JMPRcond;
+     instruction = {opcode[6:3], `NN, `R0, 6'd10};
+     #10 `assert(seq_core.pc, (10))
+     
+     // TC-23: Execute HALT
+     instruction = {`HALT};
+     #10 `assert(seq_core.pc, 10);
      
         
 end
