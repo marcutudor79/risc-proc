@@ -1,18 +1,15 @@
 Vivado Simulator v2024.1
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
-Running: D:/Xilinx/Vivado/2024.1/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot read_testbench_behav xil_defaultlib.read_testbench xil_defaultlib.glbl -log elaborate.log 
-Using 2 slave threads.
+Running: /home/bl4ck/Xilinx/Vivado/2024.1/bin/unwrapped/lnx64.o/xelab --incr --debug typical --relax --mt 8 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot write_back_testbench_behav xil_defaultlib.write_back_testbench xil_defaultlib.glbl -log elaborate.log 
+Using 8 slave threads.
 Starting static elaboration
 Pass Through NonSizing Optimizer
-WARNING: [VRFC 10-3129] assignment to input 'val_op1' [D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/read.v:65]
-WARNING: [VRFC 10-3129] assignment to input 'val_op2' [D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/read.v:66]
 Completed static elaboration
 Starting simulation data flow analysis
 Completed simulation data flow analysis
 Time Resolution for simulation is 1ps
-Compiling module xil_defaultlib.regs
-Compiling module xil_defaultlib.read
-Compiling module xil_defaultlib.read_testbench
+Compiling module xil_defaultlib.write_back
+Compiling module xil_defaultlib.write_back_testbench
 Compiling module xil_defaultlib.glbl
-Built simulation snapshot read_testbench_behav
+Built simulation snapshot write_back_testbench_behav

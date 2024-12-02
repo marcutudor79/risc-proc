@@ -21,7 +21,7 @@
 `include "seq_core.vh"
 `define op1 5:3
 `define op2 2:0
-`define I_SIZE_D_SIZE (`I_SIZE+ (2*`D_SIZE))
+`define I_EXEC_SIZE (`I_SIZE+ (2*`D_SIZE))
 
 module read(
     // general
@@ -30,7 +30,7 @@ module read(
     
     // pipeline in / out
     input [`I_SIZE-1:0] instruction_in, 
-    output reg [`I_SIZE_D_SIZE-1:0] instruction_out,
+    output reg [`I_EXEC_SIZE-1:0] instruction_out,
     
     // registers control
     output reg [`REG_A_SIZE-1:0] sel_op1,

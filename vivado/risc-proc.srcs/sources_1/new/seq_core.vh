@@ -83,3 +83,10 @@
 `define READ_DISABLED   (1'b0)
 `define WRITE_ACTIVE    (1'b1)
 `define WRITE_DISABLED  (1'b0)
+
+// PIPELINE SPECIFIC
+
+// READ STAGE
+`define I_EXEC_SIZE (`I_SIZE + (2*`D_SIZE))
+
+//

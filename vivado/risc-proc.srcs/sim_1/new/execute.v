@@ -7,7 +7,6 @@
 // Design Name: 
 // Module Name: execute
 // Project Name: 
-// Target Devices: 
 // Tool Versions: 
 // Description: 
 // 
@@ -38,21 +37,21 @@ module execute(
 );
 
 always @(posedge clk) begin
-    casex(instruction[15:9])
-        `NOP:       data_out = 0;
-        `ADD:       operand_out <= instruction_in[`I_SIZE:`I_SIZE+`D_SIZE-1] + instruction_in[`I_SIZE:`I_SIZE+2*`D_SIZE-1];
-        `ADDF:      operand_out <= [instruction[5:3]] + reg_block[instruction[2:0]];
-        `SUB:       operand_out <= [instruction[5:3]] - reg_block[instruction[2:0]];
-        `SUBF:      operand_out <= [instruction[5:3]] - reg_block[instruction[2:0]];
-        `AND:       operand_out <= ock[instruction[5:3]] & reg_block[instruction[2:0]];
-        `OR:        operand_out <= reg_block[instruction[5:3]] | reg_block[instruction[2:0]];
-        `XOR:       operand_out <= reg_block[instruction[5:3]] ^ reg_block[instruction[2:0]];
-        `NAND:      operand_out <= ~(reg_block[instruction[5:3]] & reg_block[instruction[2:0]]);
-        `NOR:       operand_out <= ~(reg_block[instruction[5:3]] | reg_block[instruction[2:0]]);
-        `NXOR:      operand_out <= ~(reg_block[instruction[5:3]] ^ reg_block[instruction[2:0]]);
-        `SHIFTR:    operand_out <= reg_block[instruction[8:6]] >> instruction[5:0];
-        `SHIFTRA:   operand_out <= $signed(reg_block[instruction[8:6]]) >>> instruction[5:0]; 
-        `SHIFTL:    operand_out <= reg_block[instruction[8:6]] << instruction[5:0];
+    casex(instruction_in[79:73])
+        `NOP:       data_out    <= 0;
+        `ADD:       operand_out <= instruction_in[63:32] + instruction_in[31:0];
+        `ADDF:      operand_out <= instruction_in[63:32] + instruction_in[31:0];
+        `SUB:       operand_out <= instruction_in[63:32] - instruction_in[31:0];
+        `SUBF:      operand_out <= instruction_in[63:32]- instruction_in[31:0];
+        `AND:       operand_out <= instruction_in[63:32] & instruction_in[31:0];
+        `OR:        operand_out <= instruction_in[63:32] | instruction_in[31:0];
+        `XOR:       operand_out <= instruction_in[63:32] ^ instruction_in[31:0];
+        `NAND:      operand_out <= ~(instruction_in[63:32] & instruction_in[31:0]);
+        `NOR:       operand_out <= ~(instruction_in[63:32] | instruction_in[31:0]);
+        `NXOR:      operand_out <= ~(instruction_in[63:32] ^ instruction_in[31:0]);
+        `SHIFTR:    operand_out <= instruction_in[72:70] >> instruction_in[69:64];
+        `SHIFTRA:   operand_out <= $signed(instruction_in[72:70]) >>> instruction_in[69:64]; 
+        `SHIFTL:    operand_out <= instruction_in[8:6] << instruction_in[5:0];
     endcase
 end
 
