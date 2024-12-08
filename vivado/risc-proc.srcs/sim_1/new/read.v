@@ -19,9 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 `include "seq_core.vh"
-`define op1 5:3
-`define op2 2:0
-`define I_EXEC_SIZE (`I_SIZE+ (2*`D_SIZE))
 
 module read(
     // general
@@ -42,8 +39,19 @@ module read(
 );
 
 always @(*) begin
-    sel_op1 = instruction_in[`op1];
-    sel_op2 = instruction_in[`op2];
+    case(instruction_in[`I_OPCODE]) 
+        `SHIFTR,
+        `SHIFTL,
+        `SHIFTRA: begin
+            $display("SHIFTR TAKEN %d", instruction_in[`I_OP0]);
+            sel_op1 = instruction_in[`I_OP0];
+         end
+        default: begin
+            $display("default taken");
+            sel_op1 = instruction_in[`I_OP1];
+            sel_op2 = instruction_in[`I_OP2];
+        end
+    endcase
 end 
 
 always @(posedge clk) begin
@@ -51,19 +59,12 @@ always @(posedge clk) begin
        instruction_out <= {`NOP, 9'b0, val_op1, val_op2};
     end
     else begin
+       /* NOTE: In the case of SHIFT op:
+                VAL_OP1 is VAL_OP0
+                VAL_OP2 is X 
+       */
        instruction_out <= {instruction_in, val_op1, val_op2};
     end
 end
-
-// instantiate registers
-regs regs
-(
-    .clk(clk),
-    .rst(rst),
-    .sel_op1(sel_op1),
-    .sel_op2(sel_op2),
-    .val_op1(val_op1),
-    .val_op2(val_op2)
-);
 
 endmodule

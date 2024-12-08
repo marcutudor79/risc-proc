@@ -50,6 +50,15 @@ initial begin
     #10 rst = 0;
     #10 rst = 1;
     
+    seq_core.reg_block[`R0] = 0;
+    seq_core.reg_block[`R1] = 1;
+    seq_core.reg_block[`R2] = 2;
+    seq_core.reg_block[`R3] = 3;
+    seq_core.reg_block[`R4] = 4;
+    seq_core.reg_block[`R5] = 5;
+    seq_core.reg_block[`R6] = 6;
+    seq_core.reg_block[`R7] = 7;
+   
      // TC-2: Execute 2 NOP
         instruction = {`NOP, `R0, `R0, `R0};
     #10 instruction = {`NOP, `R0, `R0, `R0};

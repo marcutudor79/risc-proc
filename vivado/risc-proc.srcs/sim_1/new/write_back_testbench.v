@@ -54,12 +54,17 @@ write_back write_back
 // test dut
 initial begin 
     
-    // TC-1: Test the exec module
+    // TC-0: Test the write_back module
     rst = 1;
     destination_in = `R0;
     operand_in = 32'd1;
     #10 `assert(destination_out, `R0)
     `assert(result_out, 32'd1)
+    
+    destination_in = `R1;
+    operand_in = 32'd2;
+    #10 `assert(destination_out, `R1)
+    `assert(result_out, 32'd2)
     
 end
 

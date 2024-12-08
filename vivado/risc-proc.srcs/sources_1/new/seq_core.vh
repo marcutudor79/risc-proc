@@ -87,6 +87,21 @@
 // PIPELINE SPECIFIC
 
 // READ STAGE
-`define I_EXEC_SIZE (`I_SIZE + (2*`D_SIZE))
+`define I_OPCODE (`I_SIZE-1):(`I_SIZE-`C_SIZE)
+`define I_OP0    8:6
+`define I_OP1    5:3
+`define I_OP2    2:0
 
-//
+// EXEC STAGE
+// I_EXEC_SIZE = { I_SIZE, D_SIZE, D_SIZE }
+`define I_EXEC_SIZE   (`I_SIZE + (2*`D_SIZE))
+
+// INSTRUCTION SECTION 16 bits
+`define I_EXEC_OPCODE (`I_EXEC_SIZE-1):(`I_EXEC_SIZE-`C_SIZE)
+`define I_EXEC_OP0    (`I_EXEC_SIZE-1-`C_SIZE):(`I_EXEC_SIZE-`C_SIZE-`REG_A_SIZE)
+`define I_EXEC_OP1    (`I_EXEC_SIZE-`C_SIZE-`REG_A_SIZE-1):(`I_EXEC_SIZE-`C_SIZE-(2*`REG_A_SIZE))
+`define I_EXEC_OP2    (`I_EXEC_SIZE-`C_SIZE-(2*`REG_A_SIZE)-1):(`I_EXEC_SIZE-`C_SIZE-(3*`REG_A_SIZE))
+
+//  DATA SECTION 64 bits
+`define I_EXEC_DAT2   `D_SIZE-1:0
+`define I_EXEC_DAT1   (2*`D_SIZE)-1:`D_SIZE

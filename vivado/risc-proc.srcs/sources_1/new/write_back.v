@@ -21,27 +21,30 @@
 `include "seq_core.vh"
 
 module write_back(
+    // general 
     input clk,
     input rst,
-
-    input [`D_SIZE-1:0]     operand_in,
-    input [`REG_A_SIZE-1:0] destination_in,
-    input [`D_SIZE-1:0]     data_in,
-    input                   data_in_ready,
     
-    output reg [`REG_A_SIZE-1:0] destination_out,
-    output reg [`D_SIZE-1:0]     result_out
+    // memory control
+    input [`D_SIZE-1:0]          data_in,
+    
+    // pipeline in 
+    input [`I_EXEC_SIZE-1:0]     instruction_in,
+
+    // pipeline out 
+    output reg [`REG_A_SIZE-1:0] destination,
+    output reg [`D_SIZE-1:0]     result
 );
 
 always @(posedge clk) begin
-    if (1'b1 == data_in_ready) begin
-        result_out <= data_in;
-    end
-    
-    else begin
-        result_out <= operand_in;
-        destination_out <= destination_in; 
-    end
+    if (1'b0 == rst) begin
+        result      <= 0;
+        destination <= 0;
+    end 
+    if (instruction_in[`I_EXEC_OPCODE] != `NOP) begin
+        result      <= instruction_in[`I_EXEC_DAT2];
+        destination <= instruction_in[`I_EXEC_OP0]; 
+    end 
 end
 
 

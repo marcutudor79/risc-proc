@@ -27,8 +27,7 @@ module fetch(
     // program memory
     output reg [`A_SIZE-1:0] pc,
     input  [`I_SIZE-1:0] instruction,
-    
-    // IR register output
+    // instruction register output
     output reg [`I_SIZE-1:0] instruction_register
 );
 
@@ -40,6 +39,12 @@ always @(posedge clk) begin
         pc <= 1'd0;
     end
     
+    // if HALT is executed, then the pc remains frozen
+    else if (`HALT == instruction) begin
+        pc <= pc;
+    end
+    
+    // continue executing if no HALT or RST
     else begin
         instruction_register <= instruction;
         

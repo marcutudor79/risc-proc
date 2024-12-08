@@ -22,15 +22,19 @@
 
 /*  
     Register block memory used by the read pipeline to fetch 
-    data and by the write back register to set the results
+    data and by the write back stage to set the results
 */
 module regs (
     input clk,
     input rst,
     
-    // input signals
+    // input signals read stage
     input [`REG_A_SIZE-1:0] sel_op1,
     input [`REG_A_SIZE-1:0] sel_op2,
+    
+    // input signals write_back stage
+    input [`REG_A_SIZE-1:0] destination,
+    input [`D_SIZE-1:0]     result,
     
     // output signals 
     output reg [`D_SIZE-1:0] val_op1,
@@ -40,20 +44,27 @@ module regs (
 // define the registers memory
 reg [`D_SIZE-1:0] reg_block [0:`REG_BLOCK_SIZE-1];
 
+// instantaneous reply from registers
+always @(*) begin
+    // send the values of the selected operands
+    val_op1 = reg_block[sel_op1];
+    val_op2 = reg_block[sel_op2];    
+end
+
 always @(posedge clk) begin
     if (1'b0 == rst) begin
         reg_block[0] <= 32'd0;
-        reg_block[1] <= 32'd1;
-        reg_block[2] <= 32'd2;
-        reg_block[3] <= 32'd3;
-        reg_block[4] <= 32'd4;
-        reg_block[5] <= 32'd5;
-        reg_block[6] <= 32'd6;
-        reg_block[7] <= 32'd7;
+        reg_block[1] <= 32'd0;
+        reg_block[2] <= 32'd0;
+        reg_block[3] <= 32'd0;
+        reg_block[4] <= 32'd0;
+        reg_block[5] <= 32'd0;
+        reg_block[6] <= 32'd0;
+        reg_block[7] <= 32'd0;
     end
     else begin
-        val_op1 <= reg_block[sel_op1];
-        val_op2 <= reg_block[sel_op2];
+        // fetch the value from the write_back module
+        reg_block[destination] <= result;        
     end
 end
 

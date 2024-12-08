@@ -47,13 +47,13 @@ always @(posedge clk) begin
     if (1'b0 == rst) begin
         pc <= 1'd0;
         reg_block[0] <= 0;
-        reg_block[1] <= 1;
-        reg_block[2] <= 2;
-        reg_block[3] <= 3;
-        reg_block[4] <= 4;
-        reg_block[5] <= 5;
-        reg_block[6] <= 6;
-        reg_block[7] <= 7;
+        reg_block[1] <= 0;
+        reg_block[2] <= 0;
+        reg_block[3] <= 0;
+        reg_block[4] <= 0;
+        reg_block[5] <= 0;
+        reg_block[6] <= 0;
+        reg_block[7] <= 0;
     end
     else begin    
         if (instruction != `HALT) begin
