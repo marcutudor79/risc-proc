@@ -29,8 +29,16 @@ module execute(
     
     // memory control
     output reg [`A_SIZE-1:0] addr,
-    output reg [`D_SIZE-1:0] data_out
+    output reg [`D_SIZE-1:0] data_out,
+    
+    // read block fast result register
+    output reg [`D_SIZE-1:0] result_exec
 );
+
+// regardless of the clock timing, fast forward the result
+always @(*) begin
+    result_exec = instruction_out[31:0];
+end
 
 always @(posedge clk) begin
     // Set the instruction that was used in the instruction_out register

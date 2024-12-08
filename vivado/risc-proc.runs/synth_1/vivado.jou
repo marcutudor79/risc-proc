@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Sun Dec  8 21:49:51 2024
+# Process ID: 80135
+# Current directory: /home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1
+# Command line: vivado -log data_dep_ctrl.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source data_dep_ctrl.tcl
+# Log file: /home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1/data_dep_ctrl.vds
+# Journal file: /home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1/vivado.jou
+# Running On        :tudor-VirtualBox
+# Platform          :Ubuntu
+# Operating System  :Ubuntu 24.04.1 LTS
+# Processor Detail  :12th Gen Intel(R) Core(TM) i7-12800H
+# CPU Frequency     :81.364 MHz
+# CPU Physical cores:10
+# CPU Logical cores :10
+# Host memory       :8325 MB
+# Swap memory       :4294 MB
+# Total Virtual     :12619 MB
+# Available Virtual :10093 MB
+#-----------------------------------------------------------
+source data_dep_ctrl.tcl -notrace

@@ -1,0 +1,59 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Sun Dec  8 21:49:51 2024
+# Process ID: 80135
+# Current directory: /home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1
+# Command line: vivado -log data_dep_ctrl.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source data_dep_ctrl.tcl
+# Log file: /home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1/data_dep_ctrl.vds
+# Journal file: /home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1/vivado.jou
+# Running On        :tudor-VirtualBox
+# Platform          :Ubuntu
+# Operating System  :Ubuntu 24.04.1 LTS
+# Processor Detail  :12th Gen Intel(R) Core(TM) i7-12800H
+# CPU Frequency     :81.364 MHz
+# CPU Physical cores:10
+# CPU Logical cores :10
+# Host memory       :8325 MB
+# Swap memory       :4294 MB
+# Total Virtual     :12619 MB
+# Available Virtual :10093 MB
+#-----------------------------------------------------------
+source data_dep_ctrl.tcl -notrace
+Command: synth_design -top data_dep_ctrl -part xc7z010iclg225-1L
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010i'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010i'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 80174
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:12 . Memory (MB): peak = 1812.230 ; gain = 426.566 ; free physical = 1356 ; free virtual = 8341
+---------------------------------------------------------------------------------
+ERROR: [Synth 8-10157] use of undefined macro 'I_SIZE' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:29]
+ERROR: [Synth 8-10157] use of undefined macro 'I_EXEC_SIZE' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:33]
+ERROR: [Synth 8-10157] use of undefined macro 'I_OP1' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:42]
+ERROR: [Synth 8-2716] syntax error near ']' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:42]
+ERROR: [Synth 8-10157] use of undefined macro 'I_EXEC_OP0' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:42]
+ERROR: [Synth 8-2716] syntax error near ']' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:42]
+ERROR: [Synth 8-10157] use of undefined macro 'I_OP2' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:43]
+ERROR: [Synth 8-2716] syntax error near ']' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:43]
+ERROR: [Synth 8-2716] syntax error near ']' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:43]
+ERROR: [Synth 8-10157] use of undefined macro 'NOP' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:46]
+ERROR: [Synth 8-2716] syntax error near ',' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:46]
+ERROR: [Synth 8-10157] use of undefined macro 'R0' [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:46]
+WARNING: [Synth 8-9400] empty statement in sequential block [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:46]
+INFO: [Synth 8-10285] module 'data_dep_ctrl' is ignored due to previous errors [/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v:56]
+INFO: [Synth 8-9084] Verilog file '/home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v' ignored due to errors
+ERROR: [Synth 8-439] module 'data_dep_ctrl' not found
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:10 ; elapsed = 00:00:15 . Memory (MB): peak = 1887.199 ; gain = 501.535 ; free physical = 1154 ; free virtual = 8135
+---------------------------------------------------------------------------------
+synthesize failed
+INFO: [Common 17-83] Releasing license: Synthesis
+7 Infos, 1 Warnings, 0 Critical Warnings and 14 Errors encountered.
+synth_design failed
+ERROR: [Common 17-69] Command failed: Vivado Synthesis failed
+INFO: [Common 17-206] Exiting Vivado at Sun Dec  8 21:50:11 2024...

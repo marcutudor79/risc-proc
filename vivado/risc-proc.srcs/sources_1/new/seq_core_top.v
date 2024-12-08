@@ -58,6 +58,8 @@ wire [`REG_A_SIZE-1:0] sel_op1;
 wire [`REG_A_SIZE-1:0] sel_op2;
 wire [`D_SIZE-1:0] val_op1;
 wire [`D_SIZE-1:0] val_op2;
+wire data_dep_detected;
+wire data_dep_op_sel;
 
 // 2nd STAGE 
 read read
@@ -73,10 +75,15 @@ read read
     .sel_op1(sel_op1),
     .sel_op2(sel_op2),
     .val_op1(val_op1),
-    .val_op2(val_op2)
+    .val_op2(val_op2),
+    // data dependency control
+    .data_dep_detected(data_dep_detected),
+    .data_dep_op_sel(data_dep_op_sel),
+    .val_op_exec(result_exec)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec;
+wire [`D_SIZE-1:0] result_exec;
 
 // 3rd STAGE
 execute execute
@@ -87,7 +94,10 @@ execute execute
     //pipeline in    
     .instruction_in(instruction_out_read),
     //pipeline out
-    .instruction_out(instruction_out_exec)
+    .instruction_out(instruction_out_exec),
+    // data dependency control -> 
+    // result fast forward to read stage
+    .result_exec(result_exec)
 );
 
 wire [`REG_A_SIZE-1:0] destination;
@@ -124,4 +134,22 @@ regs regs
     .val_op1(val_op1),
     .val_op2(val_op2)
 );
+
+/**************************************
+    DATA DEPENDECY CONTROL MODULE
+          INSTANTIATION
+***************************************/
+data_dep_ctrl data_dep_ctrl
+(
+    // general
+    .rst(rst),
+    .clk(clk),   
+    // pipeline instruction signals to check
+    .instruction_read_in(instruction_register),
+    .instruction_exec_in(instruction_out_read),
+    // read stage control
+    .data_dep_detected(data_dep_detected),
+    .data_dep_op_sel(data_dep_op_sel)
+);
+ 
 endmodule

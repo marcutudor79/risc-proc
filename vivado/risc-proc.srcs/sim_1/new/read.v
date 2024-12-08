@@ -35,7 +35,14 @@ module read(
     
     // registers fetch
     input wire [`D_SIZE-1:0] val_op1,
-    input wire [`D_SIZE-1:0] val_op2
+    input wire [`D_SIZE-1:0] val_op2,
+    
+    // exec block fetch
+    input wire [`D_SIZE-1:0] val_op_exec,
+    
+    // data_dep_ctrl control
+    input wire data_dep_detected,  // active 0
+    input wire data_dep_op_sel     // select which operand to override with val_op_exec         
 );
 
 always @(*) begin
@@ -43,11 +50,9 @@ always @(*) begin
         `SHIFTR,
         `SHIFTL,
         `SHIFTRA: begin
-            $display("SHIFTR TAKEN %d", instruction_in[`I_OP0]);
             sel_op1 = instruction_in[`I_OP0];
          end
         default: begin
-            $display("default taken");
             sel_op1 = instruction_in[`I_OP1];
             sel_op2 = instruction_in[`I_OP2];
         end
@@ -63,7 +68,17 @@ always @(posedge clk) begin
                 VAL_OP1 is VAL_OP0
                 VAL_OP2 is X 
        */
-       instruction_out <= {instruction_in, val_op1, val_op2};
+       if (0'b0 == data_dep_detected) begin
+           if (`OVERRIDE_EXEC_DAT1 == data_dep_op_sel) begin
+              instruction_out <= {instruction_in, val_op_exec, val_op2};
+           end
+           else if (`OVERRIDE_EXEC_DAT2 == data_dep_op_sel) begin
+              instruction_out <= {instruction_in, val_op1, val_op_exec};
+           end
+       end
+       else if (1'b1 == data_dep_detected) begin
+           instruction_out <= {instruction_in, val_op1, val_op2};
+       end
     end
 end
 
