@@ -42,12 +42,16 @@ module data_dep_ctrl(
             data_dep_detected <= 1'b1;
         end
         
-        if ((instruction_read_in[`I_OPCODE] != `NOP)&&(instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_OP0])) begin 
+        if ((instruction_read_in[`I_OPCODE] != `NOP)&&
+            (instruction_exec_in[`I_EXEC_OPCODE] != `NOP)&&
+            (instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_OP0])) begin 
             data_dep_detected <= 1'b0;
             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT1;
         end
         
-        else if ((instruction_read_in[`I_OPCODE] != `NOP)&&(instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_OP0])) begin
+        else if ((instruction_read_in[`I_OPCODE] != `NOP)&&
+                 (instruction_exec_in[`I_EXEC_OPCODE] != `NOP)&&
+                 (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_OP0])) begin
             data_dep_detected <= 1'b0;
             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT1;
         end

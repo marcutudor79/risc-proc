@@ -232,24 +232,24 @@ initial begin
     // TC-14: EXECUTE SHIFTRA instruction
         rst = 0;
     #10 rst = 1;
-        seq_core_top.regs.reg_block[`R4] = -4;
-        seq_core.reg_block[`R4]          = -4;
-        instruction = {`SHIFTRA, `R4, 6'd1};
+        seq_core_top.regs.reg_block[`R5] = -4;
+        seq_core.reg_block[`R5]          = -4;
+        instruction = {`SHIFTRA, `R5, 6'd1};
         // Switch the instruction to NOP -> such that the golden model will report the true value
         // 5 clock cycles diff between golden model and seq_core with pipeline
         #10 instruction = {`NOP, `R0, `R0, `R0};
-        #60 `assert(seq_core_top.regs.reg_block[`R4], seq_core.reg_block[`R4])
+        #60 `assert(seq_core_top.regs.reg_block[`R5], seq_core.reg_block[`R5])
         
     // TC-15: EXECUTE SHIFTL instruction
         rst = 0;
     #10 rst = 1;
-        seq_core_top.regs.reg_block[`R4] = 2;
-        seq_core.reg_block[`R4]          = 2;
-        instruction = {`SHIFTL, `R4, 6'd1};
+        seq_core_top.regs.reg_block[`R6] = 2;
+        seq_core.reg_block[`R6]          = 2;
+        instruction = {`SHIFTL, `R6, 6'd1};
         // Switch the instruction to NOP -> such that the golden model will report the true value
         // 5 clock cycles diff between golden model and seq_core with pipeline
         #10 instruction = {`NOP, `R0, `R0, `R0};
-        #60 `assert(seq_core_top.regs.reg_block[`R4], seq_core.reg_block[`R4])
+        #60 `assert(seq_core_top.regs.reg_block[`R6], seq_core.reg_block[`R6])
         
     // TC-16: EXECUTE HALT instruction
         rst = 0;
@@ -259,6 +259,27 @@ initial begin
         instruction = {`HALT};
     #10 `assert(seq_core_top.pc, seq_core.pc)
     #90 `assert(seq_core_top.pc, seq_core.pc)
-     
+    
+    /*******************************************************************
+       TEST THE INSTRUCTION EXECUTION - ARITMHETHIC & LOGIC & NOP & HALT
+                     -WITH 1 DATA DEPENDENCY-       
+    *******************************************************************/
+        rst = 0;
+    #10 rst = 1;
+        seq_core_top.regs.reg_block[`R1] = 1;
+        seq_core_top.regs.reg_block[`R2] = 2;
+        instruction = {`ADD, `R3, `R2, `R1};
+    #10 instruction = {`ADD, `R0, `R1, `R3};
+    #50 `assert(seq_core_top.regs.reg_block[`R0], 4) 
+    
+        rst = 0;
+    #10 rst = 1;
+        seq_core_top.regs.reg_block[`R1] = 1;
+        seq_core_top.regs.reg_block[`R2] = 2;
+        instruction = {`SUB, `R3, `R2, `R1};
+    #10 instruction = {`SUB, `R3, `R1, `R3};
+    #50 `assert(seq_core_top.regs.reg_block[`R3], 0) 
+    
+         
 end
 endmodule

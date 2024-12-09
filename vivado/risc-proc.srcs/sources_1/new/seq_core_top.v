@@ -75,11 +75,7 @@ read read
     .sel_op1(sel_op1),
     .sel_op2(sel_op2),
     .val_op1(val_op1),
-    .val_op2(val_op2),
-    // data dependency control
-    .data_dep_detected(data_dep_detected),
-    .data_dep_op_sel(data_dep_op_sel),
-    .val_op_exec(result_exec)
+    .val_op2(val_op2)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec;
@@ -95,9 +91,9 @@ execute execute
     .instruction_in(instruction_out_read),
     //pipeline out
     .instruction_out(instruction_out_exec),
-    // data dependency control -> 
-    // result fast forward to read stage
-    .result_exec(result_exec)
+    //data_dep ctrl
+    .data_dep_detected(data_dep_detected),
+    .data_dep_op_sel(data_dep_op_sel)
 );
 
 wire [`REG_A_SIZE-1:0] destination;
@@ -145,9 +141,10 @@ data_dep_ctrl data_dep_ctrl
     .rst(rst),
     .clk(clk),   
     // pipeline instruction signals to check
+    // check the IN to READ stage and IN to EXEC stage
     .instruction_read_in(instruction_register),
     .instruction_exec_in(instruction_out_read),
-    // read stage control
+    // exec stage control
     .data_dep_detected(data_dep_detected),
     .data_dep_op_sel(data_dep_op_sel)
 );

@@ -31,34 +31,55 @@ module execute(
     output reg [`A_SIZE-1:0] addr,
     output reg [`D_SIZE-1:0] data_out,
     
-    // read block fast result register
-    output reg [`D_SIZE-1:0] result_exec
+    // data_dep_ctrl control
+    input wire data_dep_detected,  // active 0
+    input wire data_dep_op_sel     // select which operand to override with val_op_exec         
 );
 
-// regardless of the clock timing, fast forward the result
+// exec fast register -> will override one of the values from read stage
+reg [`D_SIZE-1:0] op1;
+reg [`D_SIZE-1:0] op2;
+
+// override one of the operands if data dependecy is detected 
 always @(*) begin
-    result_exec = instruction_out[31:0];
+     if (0'b0 == data_dep_detected) begin
+           case(data_dep_op_sel)
+            `OVERRIDE_EXEC_DAT1: begin
+                op1 = instruction_out[31:0];
+                op2 = instruction_in[63:32];
+            end
+            `OVERRIDE_EXEC_DAT2: begin
+                op1 = instruction_in[31:0];
+                op2 = instruction_out[31:0];
+            end         
+            endcase
+     end
+     else begin
+        op2 = instruction_in[31:0];
+        op1 = instruction_in[63:32];
+     end
 end
 
 always @(posedge clk) begin
+    
     // Set the instruction that was used in the instruction_out register
     instruction_out[`I_EXEC_SIZE-1:64] <= instruction_in[`I_EXEC_SIZE-1:64];
     
     // Set the computed operand in the op0 place
     casex(instruction_in[`I_EXEC_OPCODE])
-        `ADD:       instruction_out[31:0] <= instruction_in[63:32] + instruction_in[31:0];
-        `ADDF:      instruction_out[31:0] <= instruction_in[63:32] + instruction_in[31:0];
-        `SUB:       instruction_out[31:0] <= instruction_in[63:32] - instruction_in[31:0];
-        `SUBF:      instruction_out[31:0] <= instruction_in[63:32] - instruction_in[31:0];
-        `AND:       instruction_out[31:0] <= instruction_in[63:32] & instruction_in[31:0];
-        `OR:        instruction_out[31:0] <= instruction_in[63:32] | instruction_in[31:0];
-        `XOR:       instruction_out[31:0] <= instruction_in[63:32] ^ instruction_in[31:0];
-        `NAND:      instruction_out[31:0] <= ~(instruction_in[63:32] & instruction_in[31:0]);
-        `NOR:       instruction_out[31:0] <= ~(instruction_in[63:32] | instruction_in[31:0]);
-        `NXOR:      instruction_out[31:0] <= ~(instruction_in[63:32] ^ instruction_in[31:0]);
-        `SHIFTR:    instruction_out[31:0] <= instruction_in[`I_EXEC_DAT1]          >>  {instruction_in[`I_EXEC_OP1], instruction_in[`I_EXEC_OP2]};
-        `SHIFTRA:   instruction_out[31:0] <= $signed(instruction_in[`I_EXEC_DAT1]) >>> {instruction_in[`I_EXEC_OP1], instruction_in[`I_EXEC_OP2]}; 
-        `SHIFTL:    instruction_out[31:0] <= instruction_in[`I_EXEC_DAT1]          <<  {instruction_in[`I_EXEC_OP1], instruction_in[`I_EXEC_OP2]};
+        `ADD:       instruction_out[31:0] <= op1 + op2;
+        `ADDF:      instruction_out[31:0] <= op1 + op2;
+        `SUB:       instruction_out[31:0] <= op1 - op2;
+        `SUBF:      instruction_out[31:0] <= op1 - op2;
+        `AND:       instruction_out[31:0] <= op1 & op2;
+        `OR:        instruction_out[31:0] <= op1 | op2;
+        `XOR:       instruction_out[31:0] <= op1 ^ op2;
+        `NAND:      instruction_out[31:0] <= ~(op1 & op2);
+        `NOR:       instruction_out[31:0] <= ~(op1 | op2);
+        `NXOR:      instruction_out[31:0] <= ~(op1 ^ op2);
+        `SHIFTR:    instruction_out[31:0] <= op1         >>  {instruction_in[`I_EXEC_OP1], instruction_in[`I_EXEC_OP2]};
+        `SHIFTRA:   instruction_out[31:0] <= $signed(op1) >>> {instruction_in[`I_EXEC_OP1], instruction_in[`I_EXEC_OP2]}; 
+        `SHIFTL:    instruction_out[31:0] <= op1        <<  {instruction_in[`I_EXEC_OP1], instruction_in[`I_EXEC_OP2]};
     endcase
 end
 
