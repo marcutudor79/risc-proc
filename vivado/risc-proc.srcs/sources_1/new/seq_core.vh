@@ -44,6 +44,7 @@
 `define R5             (3'd5)
 `define R6             (3'd6)
 `define R7             (3'd7)
+`define OUT_OF_BOUND_REG (3'd8)
 
 `define READ_REGISTER  (1'd1)
 `define WRITE_REGISTER (1'd0)
@@ -105,12 +106,15 @@
 `define I_EXEC_SIZE   (`I_SIZE + (2*`D_SIZE))
 
 // INSTRUCTION SECTION 16 bits
+`define I_EXEC_INSTR  (`I_EXEC_SIZE-1):(`D_SIZE*2)
 `define I_EXEC_OPCODE (`I_EXEC_SIZE-1):(`I_EXEC_SIZE-`C_SIZE)
 `define I_EXEC_OP0    (`I_EXEC_SIZE-1-`C_SIZE):(`I_EXEC_SIZE-`C_SIZE-`REG_A_SIZE)
 `define I_EXEC_OP1    (`I_EXEC_SIZE-`C_SIZE-`REG_A_SIZE-1):(`I_EXEC_SIZE-`C_SIZE-(2*`REG_A_SIZE))
 `define I_EXEC_OP2    (`I_EXEC_SIZE-`C_SIZE-(2*`REG_A_SIZE)-1):(`I_EXEC_SIZE-`C_SIZE-(3*`REG_A_SIZE))
 `define I_EXEC_OFFSET ((`D_SIZE*2)+5):(`D_SIZE*2)
 `define I_EXEC_COND   (`I_EXEC_SIZE-5):(`I_EXEC_SIZE-7)
+`define I_EXEC_CONST  ((`D_SIZE*2)+7):(`D_SIZE*2)
+`define I_EXEC_LOAD_DEST (`I_EXEC_SIZE-1-5):(`I_EXEC_SIZE-5-`REG_A_SIZE)
 
 //  DATA SECTION 64 bits
 `define I_EXEC_DAT2   `D_SIZE-1:0

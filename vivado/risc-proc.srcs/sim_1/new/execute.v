@@ -27,10 +27,6 @@ module execute(
     input [`I_EXEC_SIZE-1:0] instruction_in,
     output reg [`I_EXEC_SIZE-1:0] instruction_out,
     
-    // memory control
-    output reg [`A_SIZE-1:0] addr,
-    output reg [`D_SIZE-1:0] data_out,
-    
     // data_dep_ctrl control
     input wire data_dep_detected,  // active 0
     input wire data_dep_op_sel,    // select which operand to override with val_op_exec
@@ -38,14 +34,20 @@ module execute(
     // fetch stage control
     input wire [`A_SIZE-1:0] pc,
     output reg jmp_detected, // active 0
-    output reg [`A_SIZE-1:0] jmp_pc          
+    output reg [`A_SIZE-1:0] jmp_pc,        
+    
+    // memory control
+    output reg               read_mem,
+    output reg               write_mem,
+    output reg [`A_SIZE-1:0] address,
+    output reg [`D_SIZE-1:0] data_out  
 );
 
 // exec fast register -> will override one of the values from read stage
 reg [`D_SIZE-1:0] op1;
 reg [`D_SIZE-1:0] op2;
 
-// override one of the operands if data dependecy is detected 
+// DATA DEPENDECY LOGIC 
 always @(*) begin
      if (0'b0 == data_dep_detected) begin
            // by default, the result of arithmetic & logic op
@@ -73,6 +75,31 @@ always @(*) begin
      end
 end
 
+// LOAD and STORE MEM control logic
+always @(*) begin 
+    casex(instruction_in[`I_EXEC_OPCODE]) 
+       `LOAD: begin
+              read_mem  = `READ_ACTIVE;
+              write_mem = `WRITE_DISABLED;
+              // select only the last A_SIZE bits from the register
+              address = op1[`A_SIZE - 1:0];
+              end
+              
+       `STORE: begin
+               read_mem   = `READ_DISABLED;
+               write_mem  = `WRITE_ACTIVE;
+               // select only the last A_SIZE bits from the register
+               address  = op1[`A_SIZE - 1:0];
+               data_out = op2;
+               end
+        
+        default: begin
+               read_mem = `READ_DISABLED;
+               write_mem = `WRITE_DISABLED;
+        end
+    endcase
+end
+
 always @(posedge clk) begin
     
     // restore jmp_detected signal if last clock cylce was active
@@ -80,7 +107,7 @@ always @(posedge clk) begin
         jmp_detected <= 1;
     
     // Set the instruction that was used in the instruction_out register
-    instruction_out[`I_EXEC_SIZE-1:64] <= instruction_in[`I_EXEC_SIZE-1:64];
+    instruction_out[`I_EXEC_INSTR] <= instruction_in[`I_EXEC_INSTR];
     
     // Set the computed operand in the op0 place
     casex(instruction_in[`I_EXEC_OPCODE])
@@ -141,7 +168,10 @@ always @(posedge clk) begin
                              end            
                     endcase
                     jmp_detected <= 0;
-                    end
+                    end      
+        `LOADC: begin
+            instruction_out[`I_EXEC_DAT2] <= {op1[`D_SIZE-1:8], instruction_in[`I_EXEC_CONST]};
+         end   
     endcase
 end
 

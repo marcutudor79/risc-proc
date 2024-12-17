@@ -41,10 +41,38 @@ always @(posedge clk) begin
         result      <= 0;
         destination <= 0;
     end 
-    if (instruction_in[`I_EXEC_OPCODE] != `NOP) begin
-        result      <= instruction_in[`I_EXEC_DAT2];
-        destination <= instruction_in[`I_EXEC_OP0]; 
-    end 
+    
+    // Set the computed operand in the op0 place
+    casex(instruction_in[`I_EXEC_OPCODE])
+        `ADD,    
+        `ADDF,    
+        `SUB,    
+        `SUBF, 
+        `AND,    
+        `OR,    
+        `XOR,    
+        `NAND,    
+        `NOR,      
+        `NXOR,     
+        `SHIFTR,    
+        `SHIFTRA,   
+        `SHIFTL: begin
+              result      <= instruction_in[`I_EXEC_DAT2];
+              destination <= instruction_in[`I_EXEC_OP0]; 
+        end   
+        `LOADC: begin
+              destination <= instruction_in[`I_EXEC_LOAD_DEST]; 
+              result      <= instruction_in[`I_EXEC_DAT2];
+        end 
+        `LOAD: begin
+              result      <= data_in;
+              destination <= instruction_in[`I_EXEC_OP0];
+        end
+        
+        default: begin
+            destination   <= `OUT_OF_BOUND_REG;
+        end
+    endcase  
 end
 
 

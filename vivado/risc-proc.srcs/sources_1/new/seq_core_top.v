@@ -26,7 +26,7 @@ module seq_core_top(
     input clk,
     // program memory
     output [`A_SIZE-1:0] pc,
-    input  [15:0]        instruction,
+    input  [`I_SIZE-1:0] instruction,
     // data memory
     output               read_mem,
     output               write_mem,
@@ -102,7 +102,12 @@ execute execute
     //fetch stage ctrl
     .pc(pc),
     .jmp_detected(jmp_detected),
-    .jmp_pc(jmp_pc)
+    .jmp_pc(jmp_pc),
+    // memory ctrl
+    .address(address),
+    .data_out(data_out),
+    .read_mem(read_mem),
+    .write_mem(write_mem)
 );
 
 wire [`REG_A_SIZE-1:0] destination;

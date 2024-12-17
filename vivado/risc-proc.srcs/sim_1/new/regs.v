@@ -62,8 +62,12 @@ always @(posedge clk) begin
         reg_block[6] <= 32'd0;
         reg_block[7] <= 32'd0;
     end
+    else if (destination == `OUT_OF_BOUND_REG) begin
+        // do nothing
+    end 
     else begin
         // fetch the value from the write_back module
+        // and store it in the appropriate register
         reg_block[destination] <= result;        
     end
 end
