@@ -69,7 +69,15 @@
 `define JMP         (7'b0101xxx)
 `define JMPR        (7'b0110xxx)
 `define JMPcond     (7'b0111xxx)
+`define JMPN        (7'b0111000)
+`define JMPNN       (7'b0111001)
+`define JMPZ        (7'b0111010)
+`define JMPNZ       (7'b0111011)
 `define JMPRcond    (7'b1000xxx)
+`define JMPRN       (7'b1000000)
+`define JMPRNN      (7'b1000001)
+`define JMPRZ       (7'b1000010)
+`define JMPRNZ      (7'b1000011)
 `define HALT        (7'b1111111)
 
 // COND defs for JMP op
@@ -93,7 +101,7 @@
 `define I_OP2    2:0
 
 // EXEC STAGE
-// I_EXEC_SIZE = { I_SIZE, D_SIZE, D_SIZE }
+// I_EXEC_SIZE = { I_SIZE, D_SIZE (DAT1), D_SIZE (DAT2)}
 `define I_EXEC_SIZE   (`I_SIZE + (2*`D_SIZE))
 
 // INSTRUCTION SECTION 16 bits
@@ -101,6 +109,8 @@
 `define I_EXEC_OP0    (`I_EXEC_SIZE-1-`C_SIZE):(`I_EXEC_SIZE-`C_SIZE-`REG_A_SIZE)
 `define I_EXEC_OP1    (`I_EXEC_SIZE-`C_SIZE-`REG_A_SIZE-1):(`I_EXEC_SIZE-`C_SIZE-(2*`REG_A_SIZE))
 `define I_EXEC_OP2    (`I_EXEC_SIZE-`C_SIZE-(2*`REG_A_SIZE)-1):(`I_EXEC_SIZE-`C_SIZE-(3*`REG_A_SIZE))
+`define I_EXEC_OFFSET ((`D_SIZE*2)+5):(`D_SIZE*2)
+`define I_EXEC_COND   (`I_EXEC_SIZE-5):(`I_EXEC_SIZE-7)
 
 //  DATA SECTION 64 bits
 `define I_EXEC_DAT2   `D_SIZE-1:0

@@ -50,7 +50,10 @@ fetch fetch
     .pc(pc),
     .instruction(instruction),
     // pipeline out
-    .instruction_register(instruction_register)    
+    .instruction_register(instruction_register),    
+    // exec stage control
+    .jmp_detected(jmp_detected),
+    .jmp_pc(jmp_pc)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
@@ -80,6 +83,8 @@ read read
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec;
 wire [`D_SIZE-1:0] result_exec;
+wire jmp_detected;
+wire [`A_SIZE-1:0] jmp_pc;
 
 // 3rd STAGE
 execute execute
@@ -93,7 +98,11 @@ execute execute
     .instruction_out(instruction_out_exec),
     //data_dep ctrl
     .data_dep_detected(data_dep_detected),
-    .data_dep_op_sel(data_dep_op_sel)
+    .data_dep_op_sel(data_dep_op_sel),
+    //fetch stage ctrl
+    .pc(pc),
+    .jmp_detected(jmp_detected),
+    .jmp_pc(jmp_pc)
 );
 
 wire [`REG_A_SIZE-1:0] destination;

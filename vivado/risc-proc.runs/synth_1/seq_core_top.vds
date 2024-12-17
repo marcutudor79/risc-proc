@@ -1,17 +1,26 @@
-
-*** Running vivado
-    with args -log seq_core_top.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source seq_core_top.tcl
-
-
-
-****** Vivado v2024.1 (64-bit)
-  **** SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
-  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
-  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-  **** Start of session at: Tue Dec 17 10:40:03 2024
-    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
-    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
-
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Tue Dec 17 10:40:03 2024
+# Process ID: 11172
+# Current directory: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1
+# Command line: vivado.exe -log seq_core_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source seq_core_top.tcl
+# Log file: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1/seq_core_top.vds
+# Journal file: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1\vivado.jou
+# Running On        :DESKTOP-GOP6HTO
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :22631
+# Processor Detail  :AMD Ryzen 7 4800H with Radeon Graphics         
+# CPU Frequency     :2895 MHz
+# CPU Physical cores:8
+# CPU Logical cores :16
+# Host memory       :25146 MB
+# Swap memory       :7247 MB
+# Total Virtual     :32394 MB
+# Available Virtual :13586 MB
+#-----------------------------------------------------------
 source seq_core_top.tcl -notrace
 create_project: Time (s): cpu = 00:00:03 ; elapsed = 00:00:07 . Memory (MB): peak = 530.465 ; gain = 201.617
 Command: synth_design -top seq_core_top -part xc7z010iclg225-1L

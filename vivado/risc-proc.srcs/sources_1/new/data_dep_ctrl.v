@@ -35,8 +35,8 @@ module data_dep_ctrl(
 );
     
     // detect if the read block is going to 
-    // get from registers the resulting operand 
-    // the execution stage -> delay by 2 clock cycles
+    // get from registers the resulting operand from
+    // the execution stage -> override it with the result
     always @(posedge clk) begin
         if (1'b0 == rst) begin
             data_dep_detected <= 1'b1;
@@ -53,7 +53,7 @@ module data_dep_ctrl(
                  (instruction_exec_in[`I_EXEC_OPCODE] != `NOP)&&
                  (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_OP0])) begin
             data_dep_detected <= 1'b0;
-            data_dep_op_sel   <= `OVERRIDE_EXEC_DAT1;
+            data_dep_op_sel   <= `OVERRIDE_EXEC_DAT2;
         end
         
         else begin

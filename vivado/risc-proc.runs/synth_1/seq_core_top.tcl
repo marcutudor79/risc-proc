@@ -4,7 +4,7 @@
 
 set TIME_start [clock seconds] 
 namespace eval ::optrace {
-  variable script "/home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1/data_dep_ctrl.tcl"
+  variable script "D:/_code/risc-proc/vivado/risc-proc.runs/synth_1/seq_core_top.tcl"
   variable category "vivado_synth"
 }
 
@@ -62,15 +62,24 @@ create_project -in_memory -part xc7z010iclg225-1L
 set_param project.singleFileAddWarning.threshold 0
 set_param project.compositeFile.enableAutoGeneration 0
 set_param synth.vivado.isSynthRun true
-set_property webtalk.parent_dir /home/tudor/_code/risc-proc/vivado/risc-proc.cache/wt [current_project]
-set_property parent.project_path /home/tudor/_code/risc-proc/vivado/risc-proc.xpr [current_project]
+set_property webtalk.parent_dir D:/_code/risc-proc/vivado/risc-proc.cache/wt [current_project]
+set_property parent.project_path D:/_code/risc-proc/vivado/risc-proc.xpr [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
-set_property ip_output_repo /home/tudor/_code/risc-proc/vivado/risc-proc.cache/ip [current_project]
+set_property ip_output_repo d:/_code/risc-proc/vivado/risc-proc.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
-read_verilog -library xil_defaultlib /home/tudor/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v
+read_verilog D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core.vh
+read_verilog -library xil_defaultlib {
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/data_dep_ctrl.v
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/execute.v
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/fetch.v
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/read.v
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/regs.v
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/write_back.v
+  D:/_code/risc-proc/vivado/risc-proc.srcs/sources_1/new/seq_core_top.v
+}
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being
 # stitched into the results of this synthesis run. Any black boxes in the
@@ -84,7 +93,7 @@ set_param ips.enableIPCacheLiteLoad 1
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }
-synth_design -top data_dep_ctrl -part xc7z010iclg225-1L
+synth_design -top seq_core_top -part xc7z010iclg225-1L
 OPTRACE "synth_design" END { }
 if { [get_msg_config -count -severity {CRITICAL WARNING}] > 0 } {
  send_msg_id runtcl-6 info "Synthesis results are not added to the cache due to CRITICAL_WARNING"
@@ -94,10 +103,10 @@ if { [get_msg_config -count -severity {CRITICAL WARNING}] > 0 } {
 OPTRACE "write_checkpoint" START { CHECKPOINT }
 # disable binary constraint mode for synth run checkpoints
 set_param constraints.enableBinaryConstraints false
-write_checkpoint -force -noxdef data_dep_ctrl.dcp
+write_checkpoint -force -noxdef seq_core_top.dcp
 OPTRACE "write_checkpoint" END { }
 OPTRACE "synth reports" START { REPORT }
-generate_parallel_reports -reports { "report_utilization -file data_dep_ctrl_utilization_synth.rpt -pb data_dep_ctrl_utilization_synth.pb"  } 
+generate_parallel_reports -reports { "report_utilization -file seq_core_top_utilization_synth.rpt -pb seq_core_top_utilization_synth.pb"  } 
 OPTRACE "synth reports" END { }
 file delete __synthesis_is_running__
 close [open __synthesis_is_complete__ w]

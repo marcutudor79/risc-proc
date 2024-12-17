@@ -280,6 +280,53 @@ initial begin
     #10 instruction = {`SUB, `R3, `R1, `R3};
     #50 `assert(seq_core_top.regs.reg_block[`R3], 0) 
     
+     /*******************************************************************
+       TEST THE INSTRUCTION EXECUTION - JMP
+                     -NO DATA DEPENDENCY-       
+    *******************************************************************/
+        rst = 0;
+    #10 rst = 1;
+        opcode = `JMP;
+        seq_core_top.regs.reg_block[`R0] = 32'hBA;
+        instruction = {opcode[6:3], 9'd0, `R0};
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #20 `assert(seq_core_top.pc, 10'hBA) 
+    
+        rst = 0;
+    #10 rst = 1;
+        opcode = `JMPR;
+        instruction = {opcode[6:3], 9'd0, 3'd3};
+    // Normally PC will be 3 when JMPR is executed
+    // 3 + 3 = 6
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #20 `assert(seq_core_top.pc, 5) 
+    
+        rst = 0;
+    #10 rst = 1;
+        opcode = `JMPNN;
+        // set OP0 to be 1 in order to exec JMP
+        seq_core_top.regs.reg_block[`R1] = 32'd1;
+        // set OP1 to be BA and check the value of PC
+        seq_core_top.regs.reg_block[`R2] = 32'hBA;
+        instruction = {opcode[6:3], `NN, `R1, 3'd0, `R2};
+
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #20 `assert(seq_core_top.pc, 10'hBA) 
+    
+        rst = 0;
+    #10 rst = 1;
+        opcode = `JMPRNN;
+        // set OP0 to be 1 in order to exec JMP
+        seq_core_top.regs.reg_block[`R1] = 32'd1;
+        
+        instruction = {opcode[6:3], `NN, `R1, 6'd3};
+
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #20 `assert(seq_core_top.pc, 5) 
+    
+    
+     
+    
          
 end
 endmodule

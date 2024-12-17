@@ -39,14 +39,28 @@ module read(
 );
 
 always @(*) begin
-    case(instruction_in[`I_OPCODE]) 
+    casex(instruction_in[`I_OPCODE]) 
+        
         `SHIFTR,
         `SHIFTL,
-        `SHIFTRA: begin
+        `SHIFTRA,
+        `JMP,
+        `JMPRcond: begin
+            // I_EXEC_DAT1
             sel_op1 = instruction_in[`I_OP0];
          end
+         
+        `JMPcond: begin
+            // I_EXEC_DAT1
+            sel_op1 = instruction_in[`I_OP0];
+            // I_EXEC_DAT2
+            sel_op2 = instruction_in[`I_OP2];
+        end 
+
         default: begin
+            // I_EXEC_DAT1
             sel_op1 = instruction_in[`I_OP1];
+            // I_EXEC_DAT2
             sel_op2 = instruction_in[`I_OP2];
         end
     endcase

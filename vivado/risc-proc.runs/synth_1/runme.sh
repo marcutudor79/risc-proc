@@ -7,10 +7,14 @@
 # Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 # 
 
+echo "This script was generated under a different operating system."
+echo "Please update the PATH and LD_LIBRARY_PATH variables below, before executing this script"
+exit
+
 if [ -z "$PATH" ]; then
-  PATH=/home/tudor/Xilinx/Vivado/2024.1/ids_lite/ISE/bin/lin64:/home/tudor/Xilinx/Vivado/2024.1/bin
+  PATH=D:/Xilinx/Vitis/2024.1/bin;D:/Xilinx/Vivado/2024.1/ids_lite/ISE/bin/nt64;D:/Xilinx/Vivado/2024.1/ids_lite/ISE/lib/nt64:D:/Xilinx/Vivado/2024.1/bin
 else
-  PATH=/home/tudor/Xilinx/Vivado/2024.1/ids_lite/ISE/bin/lin64:/home/tudor/Xilinx/Vivado/2024.1/bin:$PATH
+  PATH=D:/Xilinx/Vitis/2024.1/bin;D:/Xilinx/Vivado/2024.1/ids_lite/ISE/bin/nt64;D:/Xilinx/Vivado/2024.1/ids_lite/ISE/lib/nt64:D:/Xilinx/Vivado/2024.1/bin:$PATH
 fi
 export PATH
 
@@ -21,7 +25,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='/home/tudor/_code/risc-proc/vivado/risc-proc.runs/synth_1'
+HD_PWD='D:/_code/risc-proc/vivado/risc-proc.runs/synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log
@@ -37,4 +41,4 @@ EAStep()
      fi
 }
 
-EAStep vivado -log data_dep_ctrl.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source data_dep_ctrl.tcl
+EAStep vivado -log seq_core_top.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source seq_core_top.tcl

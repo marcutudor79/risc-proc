@@ -24,12 +24,22 @@ module fetch(
      // general
     input 		rst,   // active 0
     input		clk,
-    // program memory
+    // program memory & execute control
     output reg [`A_SIZE-1:0] pc,
     input  [`I_SIZE-1:0] instruction,
     // instruction register output
-    output reg [`I_SIZE-1:0] instruction_register
+    output reg [`I_SIZE-1:0] instruction_register,
+    // execute stage jmp control
+    input wire jmp_detected,
+    input wire [`A_SIZE-1:0] jmp_pc
 );
+
+always @(*) begin
+    // if JMP is executed, then update pc with it's value
+    if (1'b0 == jmp_detected) begin
+        pc <= jmp_pc;
+    end
+end
 
 always @(posedge clk) begin 
     if (1'b0 == rst) begin
