@@ -33,10 +33,10 @@ reg [`A_SIZE-1:0] address_in;
 reg [`D_SIZE-1:0] mem [0:`A_SIZE-1];
 
 always @(posedge clk) begin 
-    address_in <= address;
     
     if (`READ_ACTIVE == read_mem) begin
-        data_out <= address_in;
+        address_in <= address;
+        data_out  <= mem[address_in];
     end
     
     else if (`WRITE_ACTIVE == write_mem) begin

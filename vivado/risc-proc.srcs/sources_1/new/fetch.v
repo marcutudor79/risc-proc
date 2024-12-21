@@ -31,21 +31,22 @@ module fetch(
     output reg [`I_SIZE-1:0] instruction_register,
     // execute stage jmp control
     input wire jmp_detected,
-    input wire [`A_SIZE-1:0] jmp_pc
+    input wire [`A_SIZE-1:0] jmp_pc,
+    // data_dep control
+    input wire load_dep_detected
 );
 
-always @(*) begin
-    // if JMP is executed, then update pc with it's value
-    if (1'b0 == jmp_detected) begin
-        pc <= jmp_pc;
-    end
+// if JMP is executed, then update pc with it's value
+// in the same clock cycle, such that to read the correct
+// next instruction
+always @(negedge jmp_detected) begin
+    pc = jmp_pc;
 end
 
 always @(posedge clk) begin 
+    // reset the pc
     if (1'b0 == rst) begin
         instruction_register <= `NOP;
-        
-        // reset the pc
         pc <= 1'd0;
     end
     
@@ -54,7 +55,14 @@ always @(posedge clk) begin
         pc <= pc;
     end
     
-    // continue executing if no HALT or RST
+    // HALT the pipeline for 1 clk cycle if load_dep 
+    // such that the memory has time to reply with the operand value
+    else if (1'b0 == load_dep_detected) begin
+        pc <= pc;
+        instruction_register <= instruction_register;    
+    end
+    
+    // otherwise continue executing 
     else begin
         instruction_register <= instruction;
         

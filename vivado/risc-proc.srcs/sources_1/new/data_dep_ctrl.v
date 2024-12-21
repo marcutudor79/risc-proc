@@ -25,34 +25,36 @@ module data_dep_ctrl(
     input rst,
     input clk,
     
-    // read stage hypervisor
-    input      [`I_SIZE-1:0]       instruction_read_in,
-    output reg                     data_dep_detected,
-    output reg [`OP_SEL_SIZE-1:0]  data_dep_op_sel,
-    
-    // execution stage hypervisor
+    // read stage hypervisor & control
+    input      [`I_SIZE-1:0]      instruction_read_in,
+    output reg [`OP_SEL_SIZE-1:0] data_dep_op_sel,
+    output reg                    exec_dep_detected, // fast forward the result from exec to an operand of read_out
+    output reg                    wb_dep_detected,   // fast forward the result from wb to an operand of read_out
+    output reg                    load_dep_detected, // fast forward the result from mem to an operand in read_out
+
+    // exec stage hypervisor 
     input      [`I_EXEC_SIZE-1:0] instruction_exec_in,
     
     // write_back stage hypervisor
-    input      [`I_EXEC_SIZE-1:0] instruction_wrback_in,
-    
-    // registers stage hypervisor
-    input      [`REG_A_SIZE-1:0] destination
-);
-    
-    reg exec_dep_detected;
-    reg wb_dep_detected;
-    
+    input      [`I_EXEC_SIZE-1:0] instruction_wrback_in
+); 
     // detect if the read block is going to 
     // get from registers the resulting operand from
     // the execution stage -> override it with the result
-    always @(posedge clk) begin
+    always @(*) begin
+    
         if (1'b0 == rst) begin
-            data_dep_detected <= 1'b1;
-        end
+            exec_dep_detected = 1'b1;
+            wb_dep_detected   = 1'b1;
+            load_dep_detected = 1'b1;
+        end else if (1'b0 == exec_dep_detected) begin
+            exec_dep_detected = 1;
+        end else if (1'b0 == load_dep_detected) begin
+            load_dep_detected = 1;
+        end 
         
         /*
-            DETECT DEPENDENCIES BETWEEN READ & EXEC
+            DETECT DEPENDENCIES BETWEEN READ IN & EXEC IN
         */
         casex(instruction_read_in[`I_OPCODE])
             `ADD,       
@@ -87,16 +89,16 @@ module data_dep_ctrl(
                             exec - ARITHMETIC & LOGIC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                         if (instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_OP0]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT1;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT1;
                         end
                         else if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_OP0]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT2;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT2;
                         end 
                     end
                     `LOAD: begin
@@ -105,17 +107,19 @@ module data_dep_ctrl(
                             exec - LOAD op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
-                         if (instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_MEM_DAT1;
+                        if (instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
+                             exec_dep_detected = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_MEM_DAT1;
                         end
                         else if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_MEM_DAT2;
-                        end    
+                             exec_dep_detected = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_MEM_DAT2;
+                        end   
                     end 
                     `LOADC: begin
                          /*
@@ -123,20 +127,20 @@ module data_dep_ctrl(
                             exec - LOADC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
-                         if (instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_CONSTANT_DAT1;
+                        if (instruction_read_in[`I_OP1] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
+                             exec_dep_detected = 0; 
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT1;
                         end
                         else if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_CONSTANT_DAT2;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT2;
                         end
                     end
                 endcase                   
-            end   
+            end  
             `LOAD,
             `STORE,
             `JMP: begin
@@ -159,12 +163,15 @@ module data_dep_ctrl(
                             exec - ARITHMETIC & LOGIC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                         if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_OP0]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT2;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT2;
+                        end
+                        else begin
+                            exec_dep_detected = 1;
                         end
                     end
                     `LOAD: begin
@@ -173,13 +180,17 @@ module data_dep_ctrl(
                             exec - LOAD op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                          if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_MEM_DAT2;
-                        end
+                             exec_dep_detected = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_MEM_DAT2;
+                         end
+                         else begin
+                            exec_dep_detected = 1;
+                         end
                     end 
                     `LOADC: begin
                          /*  
@@ -187,12 +198,12 @@ module data_dep_ctrl(
                             exec - LOADC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                          if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_CONSTANT_DAT2;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT2;
                         end
                     end
                 endcase 
@@ -217,16 +228,16 @@ module data_dep_ctrl(
                             exec - ARITHMETIC & LOGIC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                         if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_OP0]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT1;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT1;
                         end
                         else if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_OP0]) begin
-                            data_dep_detected <= 0;
-                            data_dep_op_sel   <= `OVERRIDE_EXEC_DAT2;
+                            exec_dep_detected = 0;
+                            data_dep_op_sel   = `OVERRIDE_EXEC_DAT2;
                         end
                     end
                     `LOAD: begin
@@ -235,16 +246,18 @@ module data_dep_ctrl(
                             exec - LOAD op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
-                         if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_MEM_DAT1;
+                        if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
+                             exec_dep_detected = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_MEM_DAT1;
                         end
                         else if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                            data_dep_detected <= 0;
-                            data_dep_op_sel   <= `OVERRIDE_EXEC_DAT2;
+                            exec_dep_detected = 0;
+                            load_dep_detected = 0;
+                            data_dep_op_sel   = `OVERRIDE_MEM_DAT2;
                         end
                     end 
                     `LOADC: begin
@@ -253,16 +266,16 @@ module data_dep_ctrl(
                             exec - LOADC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                          if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_CONSTANT_DAT1;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT1;
                          end
                          else if (instruction_read_in[`I_OP2] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                            data_dep_detected <= 0;
-                            data_dep_op_sel   <= `OVERRIDE_EXEC_DAT2;
+                            exec_dep_detected = 0;
+                            data_dep_op_sel   = `OVERRIDE_EXEC_DAT2;
                          end
                     end
                 endcase                 
@@ -287,12 +300,12 @@ module data_dep_ctrl(
                             exec - ARITHMETIC & LOGIC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                         if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_OP0]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_EXEC_DAT1;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT1;
                         end
                     end
                     `LOAD: begin
@@ -301,13 +314,14 @@ module data_dep_ctrl(
                             exec - LOAD op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                          if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_MEM_DAT1;
-                        end
+                             exec_dep_detected = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_MEM_DAT1;
+                         end
                     end 
                     `LOADC: begin
                          /*
@@ -315,16 +329,304 @@ module data_dep_ctrl(
                             exec - LOADC op 
                             
                             current exec instr has the output ==
-                            current read instr operands (additional 2 posedge delay
+                            current read instr operands (additional 3 posedge delay
                             would be needed)
                         */
                          if (instruction_read_in[`I_OP0] == instruction_exec_in[`I_EXEC_LOAD_DEST]) begin
-                             data_dep_detected <= 0;
-                             data_dep_op_sel   <= `OVERRIDE_CONSTANT_DAT1;
+                             exec_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_EXEC_DAT1;
+                         end
+                      end
+                endcase
+              end                           
+        endcase
+    end
+    
+    always @(*) begin
+        if (1'b0 == wb_dep_detected) begin
+            wb_dep_detected = 1;
+        end 
+    
+         /*
+            DETECT DEPENDENCIES BETWEEN READ IN & WRITE_BACK IN
+        */
+        casex(instruction_read_in[`I_OPCODE])
+            `ADD,       
+            `ADDF,   
+            `SUB,   
+            `SUBF,     
+            `AND,      
+            `OR,      
+            `XOR,      
+            `NAND,      
+            `NOR,      
+            `NXOR,  
+            `SHIFTR,    
+            `SHIFTRA,   
+            `SHIFTL: begin
+                casex (instruction_wrback_in[`I_EXEC_OPCODE])
+                    `ADD,       
+                    `ADDF,   
+                    `SUB,   
+                    `SUBF,     
+                    `AND,      
+                    `OR,      
+                    `XOR,      
+                    `NAND,      
+                    `NOR,      
+                    `NXOR,  
+                    `SHIFTR,    
+                    `SHIFTRA,   
+                    `SHIFTL: begin
+                        /*
+                            read   - ARITHMETIC & LOGIC op
+                            wrback - ARITHMETIC & LOGIC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                        if (instruction_read_in[`I_OP1] == instruction_wrback_in[`I_EXEC_OP0]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                        end
+                        else if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_OP0]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end 
+                    end
+                    `LOAD: begin
+                        /*
+                            read   - ARITHMETIC & LOGIC op
+                            wrback - LOAD op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                         if (instruction_read_in[`I_OP1] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                        end
+                        else if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end  
+                    end 
+                    `LOADC: begin
+                         /*
+                            read   - ARITHMETIC & LOGIC op
+                            wrback - LOADC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                        if (instruction_read_in[`I_OP1] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0; 
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                        end
+                        else if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end
+                    end
+                endcase                   
+            end   
+            `LOAD,
+            `STORE,
+            `JMP: begin
+                  casex (instruction_wrback_in[`I_EXEC_OPCODE])
+                    `ADD,       
+                    `ADDF,   
+                    `SUB,   
+                    `SUBF,     
+                    `AND,      
+                    `OR,      
+                    `XOR,      
+                    `NAND,      
+                    `NOR,      
+                    `NXOR,  
+                    `SHIFTR,    
+                    `SHIFTRA,   
+                    `SHIFTL: begin
+                        /*
+                            read   - LOAD, STORE & JMP op
+                            wrback - ARITHMETIC & LOGIC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                        if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_OP0]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end
+                    end
+                    `LOAD: begin
+                        /* 
+                            read   - LOAD, STORE & JMP op
+                            wrback - LOAD op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                         if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                         end
+                    end 
+                    `LOADC: begin
+                         /*  
+                            read   - LOAD, STORE & JMP op
+                            wrback - LOADC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                         if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;                 
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end
+                    end
+                endcase 
+            end
+            `JMPcond: begin
+                casex (instruction_wrback_in[`I_EXEC_OPCODE])
+                    `ADD,       
+                    `ADDF,   
+                    `SUB,   
+                    `SUBF,     
+                    `AND,      
+                    `OR,      
+                    `XOR,      
+                    `NAND,      
+                    `NOR,      
+                    `NXOR,  
+                    `SHIFTR,    
+                    `SHIFTRA,   
+                    `SHIFTL: begin
+                        /* 
+                            read   - JMPcond op
+                            wrback - ARITHMETIC & LOGIC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                        if (instruction_read_in[`I_OP0] == instruction_wrback_in[`I_EXEC_OP0]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                        end
+                        else if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_OP0]) begin
+                            wb_dep_detected   = 0;
+                            data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end
+                    end
+                    `LOAD: begin
+                        /*         
+                            read   - JMPcond op
+                            wrback - LOAD op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                        if (instruction_read_in[`I_OP0] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             load_dep_detected = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                        end
+                        else if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                            wb_dep_detected   = 0;
+                            load_dep_detected = 0;
+                            data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                        end
+                    end 
+                    `LOADC: begin
+                         /*
+                            read   - JMPcond op
+                            wrback - LOADC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                         if (instruction_read_in[`I_OP0] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                         end
+                         else if (instruction_read_in[`I_OP2] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                            wb_dep_detected   = 0;
+                            data_dep_op_sel   = `OVERRIDE_RESREGS_DAT2;
+                         end
+                    end
+                endcase                 
+            end
+            `JMPRcond:  begin
+                casex (instruction_wrback_in[`I_EXEC_OPCODE])
+                    `ADD,       
+                    `ADDF,   
+                    `SUB,   
+                    `SUBF,     
+                    `AND,      
+                    `OR,      
+                    `XOR,      
+                    `NAND,      
+                    `NOR,      
+                    `NXOR,  
+                    `SHIFTR,    
+                    `SHIFTRA,   
+                    `SHIFTL: begin
+                        /*
+                            read   - JMPcond op
+                            wrback - ARITHMETIC & LOGIC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                        if (instruction_read_in[`I_OP0] == instruction_wrback_in[`I_EXEC_OP0]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                        end
+                    end
+                    `LOAD: begin
+                        /*
+                            read   - JMPcond op
+                            wrback - LOAD op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                         if (instruction_read_in[`I_OP0] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
+                         end
+                    end 
+                    `LOADC: begin
+                         /*
+                            read   - JMPcond op
+                            wrback - LOADC op 
+                            
+                            current wrback instr has the output ==
+                            current read instr operands (additional 2 posedge delay
+                            would be needed)
+                        */
+                         if (instruction_read_in[`I_OP0] == instruction_wrback_in[`I_EXEC_LOAD_DEST]) begin
+                             wb_dep_detected   = 0;
+                             data_dep_op_sel   = `OVERRIDE_RESREGS_DAT1;
                          end
                     end
                 endcase                           
             end
         endcase
-    end
+    end    
+    
+
 endmodule
+

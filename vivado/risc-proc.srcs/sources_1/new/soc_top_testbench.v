@@ -53,18 +53,18 @@ soc_top soc_top
 initial begin
 // TC-1: Load IMEM with a program and execute it
 rst = 0;
-soc_top.imem.mem[0] =  {`LOADC_INSTR, `R1, 8'd1};
-soc_top.imem.mem[1] =  {`LOADC_INSTR, `R2, 8'd2};
-soc_top.imem.mem[2] =  {`ADD, `R0, `R1, `R2};
-soc_top.imem.mem[3] =  {`ADD, `R0, `R1, `R2};
-soc_top.imem.mem[4] =  {`ADD, `R0, `R1, `R2};
-soc_top.imem.mem[5] =  {`NOP, `R0, `R1, `R2};
-soc_top.imem.mem[6] =  {`NOP, `R0, `R1, `R2};
-soc_top.imem.mem[7] =  {`NOP, `R0, `R1, `R2};
-soc_top.imem.mem[8] =  {`NOP, `R0, `R1, `R2};
-soc_top.imem.mem[9] =  {`NOP, `R0, `R1, `R2};
-soc_top.imem.mem[10] = {`NOP, `R0, `R1, `R2};
-soc_top.imem.mem[11] = {`HALT};
+//soc_top.imem.mem[0] =  {`LOADC_INSTR, `R1, 8'd1};
+//soc_top.imem.mem[1] =  {`LOADC_INSTR, `R2, 8'd2};
+//soc_top.imem.mem[2] =  {`ADD, `R0, `R1, `R2};
+//soc_top.imem.mem[3] =  {`ADD, `R0, `R1, `R2};
+//soc_top.imem.mem[4] =  {`ADD, `R0, `R1, `R2};
+//soc_top.imem.mem[5] =  {`NOP, `R0, `R1, `R2};
+//soc_top.imem.mem[6] =  {`NOP, `R0, `R1, `R2};
+//soc_top.imem.mem[7] =  {`NOP, `R0, `R1, `R2};
+//soc_top.imem.mem[8] =  {`NOP, `R0, `R1, `R2};
+//soc_top.imem.mem[9] =  {`NOP, `R0, `R1, `R2};
+//soc_top.imem.mem[10] = {`NOP, `R0, `R1, `R2};
+//soc_top.imem.mem[11] = {`HALT};
 
 #10 rst = 1;
 end

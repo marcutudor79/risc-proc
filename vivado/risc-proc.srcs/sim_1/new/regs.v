@@ -33,8 +33,8 @@ module regs (
     input [`REG_A_SIZE-1:0] sel_op2,
     
     // input signals write_back stage
-    input [`REG_A_SIZE-1:0] destination,
-    input [`D_SIZE-1:0]     result,
+    input [`REG_A_SIZE:0] destination,
+    input [`D_SIZE-1:0]   result,
     
     // output signals 
     output reg [`D_SIZE-1:0] val_op1,
@@ -42,7 +42,7 @@ module regs (
 );
 
 // define the registers memory
-reg [`D_SIZE-1:0] reg_block [0:`REG_BLOCK_SIZE-1];
+reg [`D_SIZE-1:0] reg_block [0:`REG_BLOCK_SIZE];
 
 // instantaneous reply from registers
 always @(*) begin
@@ -62,14 +62,11 @@ always @(posedge clk) begin
         reg_block[6] <= 32'd0;
         reg_block[7] <= 32'd0;
     end
-    else if (destination == `OUT_OF_BOUND_REG) begin
-        // do nothing
-    end 
-    else begin
+    else if (destination != `OUT_OF_BOUND_REG) begin
         // fetch the value from the write_back module
         // and store it in the appropriate register
         reg_block[destination] <= result;        
-    end
+    end 
 end
 
 endmodule 

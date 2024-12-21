@@ -3,8 +3,8 @@
   <File Type="PA-TCL" Name="seq_core_top.tcl"/>
   <File Type="REPORTS-TCL" Name="seq_core_top_reports.tcl"/>
   <File Type="RDS-RDS" Name="seq_core_top.vds"/>
-  <File Type="RDS-UTIL" Name="soc_top_utilization_synth.rpt"/>
-  <File Type="RDS-UTIL-PB" Name="soc_top_utilization_synth.pb"/>
+  <File Type="RDS-UTIL" Name="seq_core_top_utilization_synth.rpt"/>
+  <File Type="RDS-UTIL-PB" Name="seq_core_top_utilization_synth.pb"/>
   <File Type="RDS-DCP" Name="seq_core_top.dcp"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>

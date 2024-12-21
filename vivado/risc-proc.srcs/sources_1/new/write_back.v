@@ -32,7 +32,7 @@ module write_back(
     input [`I_EXEC_SIZE-1:0]     instruction_in,
 
     // pipeline out 
-    output reg [`REG_A_SIZE-1:0] destination,
+    output reg [`REG_A_SIZE:0] destination,
     output reg [`D_SIZE-1:0]     result
 );
 

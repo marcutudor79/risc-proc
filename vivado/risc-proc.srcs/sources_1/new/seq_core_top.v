@@ -40,6 +40,9 @@ module seq_core_top(
          PIPELINE INSTANTIATION
 ***************************************/
 wire [`I_SIZE-1:0] instruction_register;
+wire jmp_detected;
+wire [`A_SIZE-1:0] jmp_pc;
+wire load_dep_detected;
 
 fetch fetch
 (
@@ -53,7 +56,9 @@ fetch fetch
     .instruction_register(instruction_register),    
     // exec stage control
     .jmp_detected(jmp_detected),
-    .jmp_pc(jmp_pc)
+    .jmp_pc(jmp_pc),
+    // data dep control 
+    .load_dep_detected(load_dep_detected)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
@@ -61,8 +66,9 @@ wire [`REG_A_SIZE-1:0] sel_op1;
 wire [`REG_A_SIZE-1:0] sel_op2;
 wire [`D_SIZE-1:0] val_op1;
 wire [`D_SIZE-1:0] val_op2;
-wire data_dep_detected;
-wire data_dep_op_sel;
+wire [`OP_SEL_SIZE-1:0] data_dep_op_sel;
+wire exec_dep_detected;
+wire wb_dep_detected;
 
 // 2nd STAGE 
 read read
@@ -78,13 +84,18 @@ read read
     .sel_op1(sel_op1),
     .sel_op2(sel_op2),
     .val_op1(val_op1),
-    .val_op2(val_op2)
+    .val_op2(val_op2),
+    // data dep ctrl
+    .data_dep_op_sel(data_dep_op_sel),
+    .exec_dep_detected(exec_dep_detected),
+    .wb_dep_detected(wb_dep_detected),
+    .instruction_out_exec(instruction_out_exec),
+    .result(result),
+    .data_in(data_in)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec;
 wire [`D_SIZE-1:0] result_exec;
-wire jmp_detected;
-wire [`A_SIZE-1:0] jmp_pc;
 
 // 3rd STAGE
 execute execute
@@ -96,9 +107,6 @@ execute execute
     .instruction_in(instruction_out_read),
     //pipeline out
     .instruction_out(instruction_out_exec),
-    //data_dep ctrl
-    .data_dep_detected(data_dep_detected),
-    .data_dep_op_sel(data_dep_op_sel),
     //fetch stage ctrl
     .pc(pc),
     .jmp_detected(jmp_detected),
@@ -110,7 +118,7 @@ execute execute
     .write_mem(write_mem)
 );
 
-wire [`REG_A_SIZE-1:0] destination;
+wire [`REG_A_SIZE:0] destination;
 wire [`D_SIZE-1:0] result;
 
 // 4th STAGE
@@ -123,7 +131,9 @@ write_back write_back
     .instruction_in(instruction_out_exec),
     //pipeline out
     .destination(destination),
-    .result(result)
+    .result(result),
+    // memory control
+    .data_in(data_in)
 );
 
 /**************************************
@@ -158,9 +168,13 @@ data_dep_ctrl data_dep_ctrl
     // check the IN to READ stage and IN to EXEC stage
     .instruction_read_in(instruction_register),
     .instruction_exec_in(instruction_out_read),
-    // exec stage control
-    .data_dep_detected(data_dep_detected),
-    .data_dep_op_sel(data_dep_op_sel)
+    .instruction_wrback_in(instruction_out_exec),
+    // read stage control
+    .data_dep_op_sel(data_dep_op_sel),
+    .exec_dep_detected(exec_dep_detected),
+    .wb_dep_detected(wb_dep_detected),
+    // fetch stage control
+    .load_dep_detected(load_dep_detected)
 );
  
 endmodule
