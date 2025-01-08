@@ -25,13 +25,7 @@ module seq_core_imem(
     output reg [`I_SIZE-1:0] instruction
 );
 
-`define LOADC_INSTR 5'b01000
-
-logic [`I_SIZE-1:0] mem [] = {
- {`LOADC_INSTR, `R1, 8'd1},
- {`LOADC_INSTR, `R1, 8'd1},
- {`LOADC_INSTR, `R1, 8'd1}
-};
+reg [`D_SIZE-1:0] mem [0:`MEM_SIZE-1];
 
 always @(*) begin
     instruction = mem[pc];

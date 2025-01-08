@@ -26,14 +26,15 @@ module write_back(
     input rst,
     
     // memory control
-    input [`D_SIZE-1:0]          data_in,
+    input [`D_SIZE-1:0]        data_in,
     
     // pipeline in 
-    input [`I_EXEC_SIZE-1:0]     instruction_in,
+    input [`I_EXEC_SIZE-1:0]   instruction_in,
+    input [`I_EXEC_SIZE-1:0]   instruction_in_floating_point,
 
     // pipeline out 
     output reg [`REG_A_SIZE:0] destination,
-    output reg [`D_SIZE-1:0]     result
+    output reg [`D_SIZE-1:0]   result
 );
 
 always @(posedge clk) begin
@@ -42,37 +43,63 @@ always @(posedge clk) begin
         destination <= 0;
     end 
     
-    // Set the computed operand in the op0 place
-    casex(instruction_in[`I_EXEC_OPCODE])
-        `ADD,    
-        `ADDF,    
-        `SUB,    
-        `SUBF, 
-        `AND,    
-        `OR,    
-        `XOR,    
-        `NAND,    
-        `NOR,      
-        `NXOR,     
-        `SHIFTR,    
-        `SHIFTRA,   
-        `SHIFTL: begin
-              result      <= instruction_in[`I_EXEC_DAT2];
-              destination <= instruction_in[`I_EXEC_OP0]; 
-        end   
-        `LOADC: begin
-              destination <= instruction_in[`I_EXEC_LOAD_DEST]; 
-              result      <= instruction_in[`I_EXEC_DAT2];
-        end 
-        `LOAD: begin
-              result      <= data_in;
-              destination <= instruction_in[`I_EXEC_OP0];
-        end
+    // check in the pipeline if a NOP is received from EXEC and not from EXEC_FPU, continue with EXEC_FPU
+    if ((`NOP == instruction_in[`I_EXEC_OPCODE]) || (`NOP != instruction_in_floating_point[`I_EXEC_OPCODE])) begin
+
+        casex(instruction_in[`I_EXEC_OPCODE])
+            `ADDF,        
+            `SUBF: begin
+                  result      <= instruction_in[`I_EXEC_DAT2];
+                  destination <= instruction_in[`I_EXEC_OP0]; 
+            end   
+            
+            default: begin
+                destination   <= `OUT_OF_BOUND_REG;
+            end
+        endcase  
         
-        default: begin
-            destination   <= `OUT_OF_BOUND_REG;
-        end
-    endcase  
+    end
+    
+    // check in the pipeline if a NOP is received from EXEC_FPU and not from EXEC, continue with EXEC
+    else if ((`NOP == instruction_in[`I_EXEC_OPCODE]) || (`NOP != instruction_in_floating_point[`I_EXEC_OPCODE])) begin
+         
+         // Set the computed operand in the op0 place
+        casex(instruction_in[`I_EXEC_OPCODE])
+            `ADD,        
+            `SUB,    
+            `AND,    
+            `OR,    
+            `XOR,    
+            `NAND,    
+            `NOR,      
+            `NXOR,     
+            `SHIFTR,    
+            `SHIFTRA,   
+            `SHIFTL: begin
+                  result      <= instruction_in[`I_EXEC_DAT2];
+                  destination <= instruction_in[`I_EXEC_OP0]; 
+            end   
+            `LOADC: begin
+                  destination <= instruction_in[`I_EXEC_LOAD_DEST]; 
+                  result      <= instruction_in[`I_EXEC_DAT2];
+            end 
+            `LOAD: begin
+                  result      <= data_in;
+                  destination <= instruction_in[`I_EXEC_OP0];
+            end
+            
+            default: begin
+                destination   <= `OUT_OF_BOUND_REG;
+            end
+        endcase  
+    
+    end
+    
+    // a NOP is received from both EXEC stages, therefore do nothing
+    else begin
+        destination <= `OUT_OF_BOUND_REG;
+    end
+      
 end
 
 

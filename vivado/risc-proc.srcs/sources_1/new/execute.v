@@ -84,9 +84,7 @@ always @(posedge clk) begin
     // Set the computed operand in the op0 place
     casex(instruction_in[`I_EXEC_OPCODE])
         `ADD:       instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] + instruction_in[`I_EXEC_DAT2];
-        `ADDF:      instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] + instruction_in[`I_EXEC_DAT2];
-        `SUB:       instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] - instruction_in[`I_EXEC_DAT2];
-        `SUBF:      instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] - instruction_in[`I_EXEC_DAT2];
+        `SUB:       instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] - instruction_in[`I_EXEC_DAT2];      
         `AND:       instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] & instruction_in[`I_EXEC_DAT2];
         `OR:        instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] | instruction_in[`I_EXEC_DAT2];
         `XOR:       instruction_out[`I_EXEC_DAT2] <= instruction_in[`I_EXEC_DAT1] ^ instruction_in[`I_EXEC_DAT2];

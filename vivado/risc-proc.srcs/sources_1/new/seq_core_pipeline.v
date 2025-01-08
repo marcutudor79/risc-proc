@@ -4,12 +4,12 @@
 // Engineer: 
 // 
 // Create Date: 12/07/2024 09:22:25 PM
-// Design Name: 
-// Module Name: seq_core_top
+// Design Name: seq_core_pipeline
+// Module Name: seq_core_pipeline
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: 
+// Description: pipeline implementation of the golden model
 // 
 // Dependencies: 
 // 
@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 `include "seq_core.vh"
 
-module seq_core_top(
+module seq_core_pipeline(
     // general
     input rst,
     input clk,
@@ -62,6 +62,7 @@ fetch fetch
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
+wire [`I_EXEC_SIZE-1:0] instruction_out_read_floating_point;
 wire [`REG_A_SIZE-1:0] sel_op1;
 wire [`REG_A_SIZE-1:0] sel_op2;
 wire [`D_SIZE-1:0] val_op1;
@@ -80,6 +81,7 @@ read read
     .instruction_in(instruction_register),
     // pipeline out
     .instruction_out(instruction_out_read),
+    .instruction_out_floating_point(instruction_out_floating_point),
     // registers control 
     .sel_op1(sel_op1),
     .sel_op2(sel_op2),
@@ -97,7 +99,7 @@ read read
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec;
 wire [`D_SIZE-1:0] result_exec;
 
-// 3rd STAGE
+// 3rd parallel EXEC STAGE
 execute execute
 (
     //general
@@ -118,6 +120,20 @@ execute execute
     .write_mem(write_mem)
 );
 
+wire [`I_EXEC_SIZE-1:0] instruction_out_exec_floatin_point;
+
+// 3rd parallel FPU-only EXEC STAGE
+execute_floating_point execute_floating_point
+(
+    //general
+    .rst(rst),
+    .clk(clk),
+    //pipeline in
+    .instruction_in(instruction_out_read_floating_point),
+    //pipeline out
+    .instruction_out(instruction_out_exec_floatin_point)
+);
+
 wire [`REG_A_SIZE:0] destination;
 wire [`D_SIZE-1:0] result;
 
@@ -129,6 +145,7 @@ write_back write_back
     .clk(clk),
     //pipeline in 
     .instruction_in(instruction_out_exec),
+    .instruction_in_floating_point(instruction_out_exec_floating_point),
     //pipeline out
     .destination(destination),
     .result(result),

@@ -30,7 +30,7 @@ module seq_core_dmem(
 );
 
 reg [`A_SIZE-1:0] address_in;
-reg [`D_SIZE-1:0] mem [0:`A_SIZE-1];
+reg [`D_SIZE-1:0] mem [0:`MEM_SIZE-1];
 
 always @(posedge clk) begin 
     
