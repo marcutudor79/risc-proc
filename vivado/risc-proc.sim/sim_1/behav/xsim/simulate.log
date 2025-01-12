@@ -1,0 +1,3 @@
+Time resolution is 1 ps
+ASSERTION FAILED in seq_core_pipeline_testbench: 00000000000000000000000000000000 != 00000000000000000000000000000011
+$finish called at time : 190 ns : File "D:/_code/risc-proc/vivado/risc-proc.srcs/sim_1/new/seq_core_pipeline_testbench.v" Line 147
