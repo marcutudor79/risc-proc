@@ -27,8 +27,8 @@ module read(
 
     // pipeline in / out
     input [`I_SIZE-1:0] instruction_in,
-    output reg [`I_EXEC_SIZE-1:0] instruction_out_read,                // go to the execute stage
-    output reg [`I_EXEC_SIZE-1:0] instruction_out_read_floating_point, // go to the execute_floating_point stage
+    output reg [`I_EXEC_SIZE-1:0] instruction_out_read,          // go to the execute stage
+    output reg [`I_EXEC_SIZE-1:0] instruction_out_read_floating, // go to the execute_floating_point stage
 
     // registers write
     output reg [`REG_A_SIZE-1:0] sel_op1,
@@ -39,12 +39,12 @@ module read(
     input wire [`D_SIZE-1:0] val_op2,
 
     // data_dep_ctrl
+    input wire [`OP_SEL_SIZE-1:0] data_dep_op_sel,
     input wire exec_dep_detected,
     input wire wb_dep_detected,
     input wire load_dep_detected,
-    input wire [`OP_SEL_SIZE-1:0] data_dep_op_sel,
-    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec,
     input wire [`D_SIZE-1:0] result,
+    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec,
     input wire [`D_SIZE-1:0] data_in
 );
 
@@ -138,7 +138,7 @@ always @(*) begin
                         `OVERRIDE_RESREGS_DAT2: begin instruction_out = {instruction_in, val_op1, result}; end
 
                          /*  For load depencies, one first needs to first send a NOP
-                            through the pipeline and set an varibale load_dep_op_sel with data_dep_op_sel - sequantially
+                            through the pipeline and raise an internal flag load_dep_detected
                             (this is because the mem needs 1 clk cycle to reply)
                         */
                         `OVERRIDE_MEM_DAT1: begin instruction_out = {`NOP, 32'd0, 32'd0}; end
@@ -169,12 +169,12 @@ end
 */
 always @(posedge clk) begin
 
-    // LOAD_DEP control the combinational logic above
+    // LOAD_DEP combinational logic control
     if (1'b0 == load_dep_detected) begin
-        // save data_dep_op_sel in load_dep_op_sel for 1 clk cycle
+        // set the delay register with the override operand position IF load_dep_detected flag is raised
         load_dep_op_sel <= data_dep_op_sel;
     end else begin
-        // clear the load_dep_op_sel afterwards
+        // otherwise reset it to NONE
         load_dep_op_sel <= `OVERRIDE_MEM_NONE;
     end
 
@@ -182,13 +182,13 @@ always @(posedge clk) begin
     casex(instruction_out[`I_EXEC_OPCODE])
         `ADDF,
         `SUBF: begin
-            instruction_out_read_floating_point = instruction_out;
-            instruction_out_read                = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+            instruction_out_read_floating = instruction_out;
+            instruction_out_read          = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
         end
 
         default: begin
-            instruction_out_read                = instruction_out;
-            instruction_out_read_floating_point = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+            instruction_out_read          = instruction_out;
+            instruction_out_read_floating = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
         end
     endcase
 end

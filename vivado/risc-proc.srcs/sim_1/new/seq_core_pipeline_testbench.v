@@ -144,7 +144,7 @@ initial begin
         seq_core.reg_block[`R2] = 2;
         instruction = {`ADD, `R0, `R1, `R2};
          
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])        
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])        
     
     // TC-4: Execute ADDF instruction
     // Flush the Pipeline    
@@ -156,7 +156,7 @@ initial begin
         seq_core.reg_block[`R1] = 1;
         seq_core.reg_block[`R2] = 2;
         instruction = {`ADDF, `R0, `R1, `R2};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
     
     
     // TC-5: EXECUTE SUB instruction
@@ -169,7 +169,7 @@ initial begin
         seq_core.reg_block[`R3] = 3;
         seq_core.reg_block[`R4] = 4;
         instruction = {`SUB, `R0, `R4, `R3};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
     
     // TC-6: EXECUTE SUBF instruction
     // Flush the Pipeline
@@ -181,7 +181,7 @@ initial begin
         seq_core.reg_block[`R3] = 3;
         seq_core.reg_block[`R4] = 4;
         instruction = {`SUBF, `R0, `R4, `R3};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
     
     // TC-7: EXECUTE AND instruction
     // Flush the Pipeline
@@ -192,7 +192,7 @@ initial begin
         seq_core.reg_block[`R5] = 0;
         seq_core.reg_block[`R6] = 1;
         instruction = {`AND, `R0, `R5, `R6};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
     
     // TC-8: EXECUTE OR instruction
     // Flush the Pipeline
@@ -203,7 +203,7 @@ initial begin
         seq_core.reg_block[`R7] = 0;
         seq_core.reg_block[`R6] = 1;
         instruction = {`AND, `R0, `R7, `R6};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
     
     // TC-9: EXECUTE XOR instruction
     // Flush the Pipeline
@@ -214,7 +214,7 @@ initial begin
         seq_core.reg_block[`R1] = 32'hBABA;
         seq_core.reg_block[`R2] = 32'hABAB;
         instruction = {`XOR, `R0, `R1, `R2};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0]) 
     
     // TC-10; EXECUTE NAND instruction
         rst = 0;
@@ -224,7 +224,7 @@ initial begin
         seq_core.reg_block[`R1] = 32'hBABA;
         seq_core.reg_block[`R2] = 32'hABAB;
         instruction = {`NAND, `R0, `R1, `R2};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
     
     // TC-11: EXECUTE NOR instruction
         rst = 0;
@@ -234,7 +234,7 @@ initial begin
         seq_core.reg_block[`R1] = 32'hBABA;
         seq_core.reg_block[`R2] = 32'hABAB;
         instruction = {`NOR, `R0, `R1, `R2};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
     
     // TC-12: EXECUTE NXOR instruction
         rst = 0;
@@ -244,19 +244,20 @@ initial begin
         seq_core.reg_block[`R1] = 32'hBABA;
         seq_core.reg_block[`R2] = 32'hABAB;
         instruction = {`NXOR, `R0, `R1, `R2};
-    #60 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
     
     
     // TC-13: EXECUTE SHIFTR instruction
+        instruction = {`NOP, `R0, `R0, `R0};
         rst = 0;
     #10 rst = 1;
         seq_core_pipeline.regs.reg_block[`R4] = 4;
-        seq_core.reg_block[`R4]          = 4;
+        seq_core.reg_block[`R4]               = 4;
         instruction = {`SHIFTR, `R4, 6'd1};
     // Switch the instruction to NOP -> such that the golden model will report the true value
     // 5 clock cycles diff between golden model and seq_core with pipeline
     #10 instruction = {`NOP, `R0, `R0, `R0};
-    #50 `assert(seq_core_pipeline.regs.reg_block[`R4], seq_core.reg_block[`R4])
+    #70 `assert(seq_core_pipeline.regs.reg_block[`R4], seq_core.reg_block[`R4])
     
     
     // TC-14: EXECUTE SHIFTRA instruction
@@ -265,10 +266,10 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R5] = -4;
         seq_core.reg_block[`R5]          = -4;
         instruction = {`SHIFTRA, `R5, 6'd1};
-        // Switch the instruction to NOP -> such that the golden model will report the true value
-        // 5 clock cycles diff between golden model and seq_core with pipeline
-        #10 instruction = {`NOP, `R0, `R0, `R0};
-        #60 `assert(seq_core_pipeline.regs.reg_block[`R5], seq_core.reg_block[`R5])
+    // Switch the instruction to NOP -> such that the golden model will report the true value
+    // 5 clock cycles diff between golden model and seq_core with pipeline
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #70 `assert(seq_core_pipeline.regs.reg_block[`R5], seq_core.reg_block[`R5])
         
     // TC-15: EXECUTE SHIFTL instruction
         rst = 0;
@@ -276,16 +277,16 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R6] = 2;
         seq_core.reg_block[`R6]          = 2;
         instruction = {`SHIFTL, `R6, 6'd1};
-        // Switch the instruction to NOP -> such that the golden model will report the true value
-        // 5 clock cycles diff between golden model and seq_core with pipeline
-        #10 instruction = {`NOP, `R0, `R0, `R0};
-        #60 `assert(seq_core_pipeline.regs.reg_block[`R6], seq_core.reg_block[`R6])
+    // Switch the instruction to NOP -> such that the golden model will report the true value
+    // 5 clock cycles diff between golden model and seq_core with pipeline
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #80 `assert(seq_core_pipeline.regs.reg_block[`R6], seq_core.reg_block[`R6])
         
     // TC-16: EXECUTE HALT instruction
         rst = 0;
     #10 rst = 1;
-        seq_core_pipeline.fetch.pc = 12;
-        seq_core.pc           = 12;
+        seq_core_pipeline.fetch.pc_out = 12;
+        seq_core.pc                = 12;
         instruction = {`HALT};
     #10 `assert(seq_core_pipeline.pc, seq_core.pc)
     #90 `assert(seq_core_pipeline.pc, seq_core.pc)
@@ -344,7 +345,7 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R2] = 2;
         instruction = {`ADD, `R3, `R2, `R1};
     #10 instruction = {`ADD, `R0, `R1, `R3};
-    #50 `assert(seq_core_pipeline.regs.reg_block[`R0], 4) 
+    #70 `assert(seq_core_pipeline.regs.reg_block[`R0], 4) 
     
         rst = 0;
     #10 rst = 1;
@@ -352,7 +353,7 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R2] = 2;
         instruction = {`SUB, `R3, `R2, `R1};
     #10 instruction = {`SUB, `R3, `R1, `R3};
-    #50 `assert(seq_core_pipeline.regs.reg_block[`R3], 0) 
+    #70 `assert(seq_core_pipeline.regs.reg_block[`R3], 0) 
     
     // Test pipeline 1 clock cycle wait for load
     `define LOAD_INSTR (5'b00111)
@@ -362,7 +363,7 @@ initial begin
         dmem.mem[1]                      = 2;
         instruction = {`LOAD_INSTR, `R2, 5'd0, `R1};
     #10 instruction = {`SUB,  `R3, `R2,  `R1};
-    #50 `assert(seq_core_pipeline.regs.reg_block[`R3], 1) 
+    #70 `assert(seq_core_pipeline.regs.reg_block[`R3], 1) 
     
     
     /*******************************************************************

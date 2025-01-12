@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="seq_core_pipeline_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="seq_core_pipeline_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="1,424.666 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,575.067 ns"></ZoomEndTime>
+      <Cursor1Time time="1,490.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="227"></NameColumnWidth>
+      <ValueColumnWidth column_width="210"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="16" />
+   <wvobject fp_name="/seq_core_pipeline_testbench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/instruction" type="array">
+      <obj_property name="ElementShortName">instruction[15:0]</obj_property>
+      <obj_property name="ObjectShortName">instruction[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/fetch/instruction_register_out" type="array">
+      <obj_property name="ElementShortName">instruction_register_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">instruction_register_out[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/read/instruction_out_read" type="array">
+      <obj_property name="ElementShortName">instruction_out_read[79:0]</obj_property>
+      <obj_property name="ObjectShortName">instruction_out_read[79:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/execute/instruction_out_exec_3" type="array">
+      <obj_property name="ElementShortName">instruction_out_exec_3[79:0]</obj_property>
+      <obj_property name="ObjectShortName">instruction_out_exec_3[79:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/write_back/destination" type="array">
+      <obj_property name="ElementShortName">destination[3:0]</obj_property>
+      <obj_property name="ObjectShortName">destination[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/write_back/result" type="array">
+      <obj_property name="ElementShortName">result[31:0]</obj_property>
+      <obj_property name="ObjectShortName">result[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/regs/reg_block" type="array">
+      <obj_property name="ElementShortName">reg_block[0:8][31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_block[0:8][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/data_dep_ctrl/exec_dep_detected" type="logic">
+      <obj_property name="ElementShortName">exec_dep_detected</obj_property>
+      <obj_property name="ObjectShortName">exec_dep_detected</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/data_dep_ctrl/wb_dep_detected" type="logic">
+      <obj_property name="ElementShortName">wb_dep_detected</obj_property>
+      <obj_property name="ObjectShortName">wb_dep_detected</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/data_dep_ctrl/load_dep_detected" type="logic">
+      <obj_property name="ElementShortName">load_dep_detected</obj_property>
+      <obj_property name="ObjectShortName">load_dep_detected</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/data_dep_ctrl/data_dep_op_sel" type="array">
+      <obj_property name="ElementShortName">data_dep_op_sel[2:0]</obj_property>
+      <obj_property name="ObjectShortName">data_dep_op_sel[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/pc" type="array">
+      <obj_property name="ElementShortName">pc[9:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[9:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/execute/jmp_detected" type="logic">
+      <obj_property name="ElementShortName">jmp_detected</obj_property>
+      <obj_property name="ObjectShortName">jmp_detected</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/execute/jmp_pc" type="array">
+      <obj_property name="ElementShortName">jmp_pc[9:0]</obj_property>
+      <obj_property name="ObjectShortName">jmp_pc[9:0]</obj_property>
+   </wvobject>
+</wave_config>

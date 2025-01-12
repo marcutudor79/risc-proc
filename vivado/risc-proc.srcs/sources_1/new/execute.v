@@ -58,6 +58,8 @@ reg [`I_EXEC_SIZE-1:0] instruction_out_exec_2;
 /* 1. Compute the instruction_out_exec combinationally
 */
 always @(*) begin
+    // assume no jump is excuted
+    jmp_detected = 1'b1;
 
     // Set the instruction_in bits in the instruction_out region, (the operands value are computed after this)
     instruction_out[`I_EXEC_INSTR] = instruction_in[`I_EXEC_INSTR];
@@ -146,10 +148,18 @@ end
 
 // 2. Sample the value of instruction_out and serve it to WRITE_BACK stage
 always @(posedge clk) begin
-    instruction_out_exec_0 <= instruction_out;
-    instruction_out_exec_1 <= instruction_out_exec_0;
-    instruction_out_exec_2 <= instruction_out_exec_1;
-    instruction_out_exec_3 <= instruction_out_exec_2;
+    if (1'b0 == rst) begin
+        instruction_out_exec_0 <= {`NOP, `R0, `R0, `R0};
+        instruction_out_exec_1 <= {`NOP, `R0, `R0, `R0};
+        instruction_out_exec_2 <= {`NOP, `R0, `R0, `R0};
+        instruction_out_exec_3 <= {`NOP, `R0, `R0, `R0};
+    end
+    else begin
+        instruction_out_exec_0 <= instruction_out;
+        instruction_out_exec_1 <= instruction_out_exec_0;
+        instruction_out_exec_2 <= instruction_out_exec_1;
+        instruction_out_exec_3 <= instruction_out_exec_2;
+    end
 end
 
 endmodule

@@ -43,6 +43,7 @@ wire [`I_SIZE-1:0] instruction_register_out;
 wire jmp_detected;
 wire [`A_SIZE-1:0] jmp_pc;
 wire load_dep_detected;
+wire backpressure_write_back;
 
 fetch fetch
 (
@@ -71,7 +72,7 @@ fetch fetch
     /*
         DATA DEP BLOCK CONTROL SIGNAL
     */
-    .load_dep_detected(load_dep_detected)
+    .load_dep_detected(load_dep_detected),
 
 
     /*
@@ -81,7 +82,7 @@ fetch fetch
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
-wire [`I_EXEC_SIZE-1:0] instruction_out_read_floating_point;
+wire [`I_EXEC_SIZE-1:0] instruction_out_read_floating;
 wire [`REG_A_SIZE-1:0] sel_op1;
 wire [`REG_A_SIZE-1:0] sel_op2;
 wire [`D_SIZE-1:0] val_op1;
@@ -103,11 +104,11 @@ read read
         PIPELINE SIGNALS
     */
     // pipeline in <- from FETCH
-    .instruction_in(instruction_register),
+    .instruction_in(instruction_register_out),
     // pipeline out -> to EXEC stage
     .instruction_out_read(instruction_out_read),
     // pipeline out -> to EXEC_FLOATING_POINT stage
-    .instruction_out_read_floating_point(instruction_out_read_floating_point),
+    .instruction_out_read_floating(instruction_out_read_floating),
 
     /*
         REGISTER BLOCK CONTROL AND RETRIEVE SIGNALS
@@ -129,7 +130,7 @@ read read
     // data_dep_op_selector <- from DATA_DEP_CTRL module
     .data_dep_op_sel(data_dep_op_sel),
     // instruction_out pipeline <- from EXEC stage
-    .instruction_out_exec(instruction_out_exec),
+    .instruction_out_exec(instruction_out_exec_3),
     // register result <- from WRITE_BACK stage
     .result(result),
     // data in value <- from MEM, external signal
@@ -159,7 +160,7 @@ execute execute
         FETCH CONTROL SIGNALS
     */
     // pc value <- from FETCH stage
-    .pc(pc_out),
+    .pc(pc),
     // jmp control signals -> to FETCH stage
     .jmp_detected(jmp_detected),
     .jmp_pc(jmp_pc),
@@ -176,7 +177,7 @@ execute execute
     .write_mem(write_mem)
 );
 
-wire [`I_EXEC_SIZE-1:0] instruction_out_exec_floating_point;
+wire [`I_EXEC_SIZE-1:0] instruction_out_exec_floating_3;
 
 // 3rd parallel FPU-only EXEC STAGE
 execute_floating_point execute_floating_point
@@ -191,9 +192,9 @@ execute_floating_point execute_floating_point
         PIPELINE SIGNALS
     */
     // pipeline in <- from READ stage
-    .instruction_in(instruction_out_read_floating_point),
+    .instruction_in(instruction_out_read_floating),
     // pipeline out -> to WRITE_BACK stage
-    .instruction_out(instruction_out_exec_floating_point)
+    .instruction_out_exec_floating_3(instruction_out_exec_floating_3)
 );
 
 wire [`REG_A_SIZE:0] destination;
@@ -212,16 +213,21 @@ write_back write_back
         PIPELINE SIGNALS
     */
     // pipeline in <- from EXEC and EXEC_FPU stage
-    .instruction_in(instruction_out_exec),
-    .instruction_in_floating_point(instruction_out_exec_floating_point),
+    .instruction_in(instruction_out_exec_3),
+    .instruction_in_floating_point(instruction_out_exec_floating_3),
     // pipeline out -> to REGS module
-    .destination(destination),
-    .result(result),
+    .destination_out(destination),
+    .result_out(result),
 
     /*
         MEM CONTROL SIGNALS
     */
-    .data_in(data_in)
+    .data_in(data_in),
+    
+    /*
+        FETCH STAGE CONTROL
+    */
+    .backpressure_write_back(backpressure_write_back)
 );
 
 /**************************************

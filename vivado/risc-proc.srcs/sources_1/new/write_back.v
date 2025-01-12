@@ -62,7 +62,7 @@ always @(*) begin
        such that the register block will do nothing
     */
     if (1'b0 == rst) begin
-        destination = 0;
+        destination = `OUT_OF_BOUND_REG;
     end
 
     // now there are 4 situations to consider:
@@ -98,7 +98,7 @@ always @(*) begin
        NOP is received from EXEC_FPU,
        -> fetch result from EXEC instruction, the next EXEC_F result will not be taken into consideration
     */
-    else if ((`NOP == instruction_in[`I_EXEC_OPCODE]) || (`NOP != instruction_in_floating_point[`I_EXEC_OPCODE])) begin
+    else if ((`NOP != instruction_in[`I_EXEC_OPCODE]) || (`NOP == instruction_in_floating_point[`I_EXEC_OPCODE])) begin
         exception_floating_point = 1'b0;
 
         casex(instruction_in[`I_EXEC_OPCODE])
