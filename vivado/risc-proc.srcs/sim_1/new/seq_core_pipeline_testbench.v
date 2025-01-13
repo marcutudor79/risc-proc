@@ -364,7 +364,7 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R1] = 1;
         dmem.mem[1]                      = 2;
         instruction = {`LOAD_INSTR, `R2, 5'd0, `R1};
-    #10 instruction = {`SUB,  `R3, `R2,  `R1};
+    #20 instruction = {`SUB,  `R3, `R2,  `R1};
     #10 instruction = {`NOP, `R0, `R0, `R0};
     #70 `assert(seq_core_pipeline.regs.reg_block[`R3], 1) 
     

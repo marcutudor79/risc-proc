@@ -78,7 +78,7 @@ fetch fetch
     /*
         FETCH STAGE CONTROL SIGNALS
     */
-    .backpressure_write_back(backpressure_write_back)
+    .backpressure_wb_concurrency(backpressure_write_back)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
@@ -126,7 +126,6 @@ read read
     // data_dep_flags <- from DATA_DEP_CTRL module
     .exec_dep_detected(exec_dep_detected),
     .wb_dep_detected(wb_dep_detected),
-    .load_dep_detected(load_dep_detected),
     // data_dep_op_selector <- from DATA_DEP_CTRL module
     .data_dep_op_sel(data_dep_op_sel),
     // instruction_out pipeline <- from EXEC stage
@@ -137,9 +136,7 @@ read read
     // instruction_out pipeline <- from EXEC FLOATING stage
     .instruction_out_exec_floating_3(execute_floating_point.instruction_out_exec_floating_2),
     // register result <- from WRITE_BACK stage
-    .result(result),
-    // data in value <- from MEM, external signal
-    .data_in(data_in)
+    .result(result)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec_3;
@@ -179,7 +176,8 @@ execute execute
     .data_out(data_out),
     // control signals for mem -> to MEM module external
     .read_mem(read_mem),
-    .write_mem(write_mem)
+    .write_mem(write_mem),
+    .data_in(data_in)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec_floating_3;
@@ -223,11 +221,6 @@ write_back write_back
     // pipeline out -> to REGS module
     .destination_out(destination),
     .result_out(result),
-
-    /*
-        MEM CONTROL SIGNALS
-    */
-    .data_in(data_in),
     
     /*
         FETCH STAGE CONTROL

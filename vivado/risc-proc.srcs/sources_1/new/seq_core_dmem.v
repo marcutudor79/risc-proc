@@ -32,11 +32,13 @@ module seq_core_dmem(
 reg [`A_SIZE-1:0] address_in;
 reg [`D_SIZE-1:0] mem [0:`MEM_SIZE-1];
 
+always @(*) begin 
+    data_out  <= mem[address_in];
+end
+
 always @(posedge clk) begin 
-    
     if (`READ_ACTIVE == read_mem) begin
         address_in <= address;
-        data_out  <= mem[address_in];
     end
     
     else if (`WRITE_ACTIVE == write_mem) begin

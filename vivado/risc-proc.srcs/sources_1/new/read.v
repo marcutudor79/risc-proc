@@ -42,7 +42,6 @@ module read(
     input wire [`OP_SEL_SIZE-1:0] data_dep_op_sel,
     input wire exec_dep_detected,
     input wire wb_dep_detected,
-    input wire load_dep_detected,
 
     // fast forward from EXEC stage
     input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_0,
@@ -129,8 +128,8 @@ always @(*) begin
                 VAL_OP1 is VAL_OP0
                 VAL_OP2 is X
        */
-       // OTHER DEP DETECTED -> compute the instruction_out based on WB result or EXEC exec_out and reg block
-       if ((1'b0 == exec_dep_detected) || (1'b0 == wb_dep_detected) || (1'b0 == load_dep_detected)) begin
+       // DEP DETECTED -> compute the instruction_out based on WB result or EXEC or EXEC FPU and reg block
+       if ((1'b0 == exec_dep_detected) || (1'b0 == wb_dep_detected) ) begin
             case(data_dep_op_sel)
                 `OVERRIDE_EXEC_0_DAT1: begin instruction_out = {instruction_in, instruction_out_exec_0[`I_EXEC_DAT2], val_op2}; end
     

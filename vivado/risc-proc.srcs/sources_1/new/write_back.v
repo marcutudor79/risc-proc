@@ -120,9 +120,10 @@ always @(*) begin
                   destination = instruction_in[`I_EXEC_LOAD_DEST];
                   result      = instruction_in[`I_EXEC_DAT2];
             end
+            // the data_in from mem is already embedded in the pipeline instruction from EXEC
             `LOAD: begin
-                  result      = data_in;
-                  destination = instruction_in[`I_EXEC_OP0];
+                destination = instruction_in[`I_EXEC_OP0];
+                result      = instruction_in[`I_EXEC_DAT2];
             end
             // should never enter default case
             default: begin
@@ -183,9 +184,10 @@ always @(*) begin
                     destination = instruction_in[`I_EXEC_LOAD_DEST];
                     result      = instruction_in[`I_EXEC_DAT2];
                 end
+                // the data_in from mem is already embedded in the pipeline instruction from EXEC
                 `LOAD: begin
-                    result      = data_in;
                     destination = instruction_in[`I_EXEC_OP0];
+                    result      = instruction_in[`I_EXEC_DAT2];
                 end
                 // should never enter default case
                 default: begin

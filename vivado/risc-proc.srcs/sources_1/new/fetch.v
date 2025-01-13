@@ -35,7 +35,8 @@ module fetch(
     // data_dep control
     input wire load_dep_detected,
     // fetch stage control
-    input wire backpressure_write_back
+    input wire backpressure_wb_concurrency,
+    input wire backpressure_exec_load
 );
 
 // internal variables of the fetch stage
@@ -64,14 +65,14 @@ always @(*) begin
         instruction_register = instruction;
     end
 
-    /* if `LOAD is executed, stop the pipeline from advancing
+    /* if backpressure_exec_load is 0, stop the pipeline from advancing
        reason: keep the current IR with the dependecy the same so
        the mem has time to reply in data_in
 
        if backpressure_write_back is 0, the pipeline is stopped
        because the EXEC result needs to be written back to the registers
     */
-    else if ((1'b0 == load_dep_detected) || (1'b0 == backpressure_write_back)) begin
+    else if ((1'b0 == backpressure_wb_concurrency) || (1'b0 == backpressure_exec_load)) begin
         pc                   = pc_out;
         exception_detected   = 1'b0;
         instruction_register = instruction_register_out;
@@ -90,7 +91,6 @@ always @(*) begin
         pc                 = 0;
         exception_detected = 1'b0;
     end
-
 end
 
 /*
