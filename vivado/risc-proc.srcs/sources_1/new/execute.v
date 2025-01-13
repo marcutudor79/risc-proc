@@ -27,14 +27,6 @@ module execute(
     input [`I_EXEC_SIZE-1:0] instruction_in,
     output reg [`I_EXEC_SIZE-1:0] instruction_out_exec_3,
 
-    // data_dep_ctrl control
-    input wire [`OP_SEL_SIZE-1:0] data_dep_op_sel, // select which operand to override with val_op_exec
-    input wire exec_dep_detected,
-    input wire wb_dep_detected,
-    input wire reg_dep_detected,
-    input wire [`D_SIZE-1:0] result,
-    input wire [`D_SIZE-1:0] data_in,
-
     // fetch stage control
     input wire [`A_SIZE-1:0] pc,
     output reg jmp_detected, // active 0

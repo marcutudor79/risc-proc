@@ -344,8 +344,9 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R1] = 1;
         seq_core_pipeline.regs.reg_block[`R2] = 2;
         instruction = {`ADD, `R3, `R2, `R1};
-    #10 instruction = {`ADD, `R0, `R1, `R3};
-    #70 `assert(seq_core_pipeline.regs.reg_block[`R0], 4) 
+    #10 instruction = {`ADD, `R4, `R1, `R3};
+    #10 instruction = {`NOP, `R0, `R0, `R0};
+    #70 `assert(seq_core_pipeline.regs.reg_block[`R4], 4) 
     
         rst = 0;
     #10 rst = 1;
@@ -353,6 +354,7 @@ initial begin
         seq_core_pipeline.regs.reg_block[`R2] = 2;
         instruction = {`SUB, `R3, `R2, `R1};
     #10 instruction = {`SUB, `R3, `R1, `R3};
+    #10 instruction = {`NOP, `R0, `R0, `R0};
     #70 `assert(seq_core_pipeline.regs.reg_block[`R3], 0) 
     
     // Test pipeline 1 clock cycle wait for load
@@ -363,6 +365,7 @@ initial begin
         dmem.mem[1]                      = 2;
         instruction = {`LOAD_INSTR, `R2, 5'd0, `R1};
     #10 instruction = {`SUB,  `R3, `R2,  `R1};
+    #10 instruction = {`NOP, `R0, `R0, `R0};
     #70 `assert(seq_core_pipeline.regs.reg_block[`R3], 1) 
     
     

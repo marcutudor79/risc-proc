@@ -43,17 +43,20 @@ module read(
     input wire exec_dep_detected,
     input wire wb_dep_detected,
     input wire load_dep_detected,
+
+    // fast forward from EXEC stage
+    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_0,
+    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_1,
+    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_2,
+    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_3,
+
+    // fast forward from EXEC_FLOATING stage
+    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_floating_3,
+
+    // fast forward from WB stage
     input wire [`D_SIZE-1:0] result,
-    input wire [`I_EXEC_SIZE-1:0] instruction_out_exec,
     input wire [`D_SIZE-1:0] data_in
 );
-
-/*  register needed because if a load_dep_det is triggered,
-    the memory replies 1 clk cycle later than the sampling of instruction_out
-    -> therefore save the data_dep_op_sel and send a NOP through the pipeline
-    -> then in the clk cycle in which memory replied, compute the instruction based on this reg
-*/
-reg [`OP_SEL_SIZE-1:0] load_dep_op_sel;
 
 /* internal variable to save the computed instruction
 */
@@ -70,28 +73,32 @@ always @(*) begin
         `SHIFTL,
         `SHIFTRA,
         `JMP,
-        `JMPRcond,
-        `LOADC: begin
+        `JMPRcond: begin
             // I_EXEC_DAT1
             sel_op1 = instruction_in[`I_OP0];
+        end
+
+        `LOADC: begin
+            // I_EXEC_DAT1 - register value to be concat with constant
+            sel_op1 = instruction_in[`I_LOADC_OP0];
          end
 
-         `STORE: begin
+        `STORE: begin
             // I_EXEC_DAT1 - location to store data
-            sel_op1 = instruction_in[`I_OP0];
+            sel_op1 = instruction_in[`I_STORE_OP0];
             // I_EXEC_DAT2 - data to be stored
-            sel_op2 = instruction_in[`I_OP2];
+            sel_op2 = instruction_in[`I_STORE_OP1];
           end
 
-         `LOAD: begin
-            sel_op1 = instruction_in[`I_OP2];
+        `LOAD: begin
+            sel_op1 = instruction_in[`I_LOAD_OP1];
          end
 
         `JMPcond: begin
             // I_EXEC_DAT1
-            sel_op1 = instruction_in[`I_OP0];
+            sel_op1 = instruction_in[`I_JMPcond_OP0];
             // I_EXEC_DAT2
-            sel_op2 = instruction_in[`I_OP2];
+            sel_op2 = instruction_in[`I_JMPcond_OP1];
         end
 
         default: begin
@@ -113,7 +120,6 @@ always @(*) begin
     // also reset the load_dep_op_sel register
     if (1'b0 == rst) begin
         instruction_out = {`NOP, 9'b0, val_op1, val_op2};
-        load_dep_op_sel = `OVERRIDE_MEM_NONE;
     end
 
     // if no reset, proceed further
@@ -123,42 +129,39 @@ always @(*) begin
                 VAL_OP1 is VAL_OP0
                 VAL_OP2 is X
        */
-       case(load_dep_op_sel)
-             // NO LOAD DEP -> no load_dep detected for which the mem value is available
-            `OVERRIDE_MEM_NONE: begin
-               // OTHER DEP DETECTED -> compute the instruction_out based on WB result or EXEC exec_out and reg block
-               if ((1'b0 == exec_dep_detected) || (1'b0 == wb_dep_detected) || (1'b0 == load_dep_detected)) begin
-                    case(data_dep_op_sel)
-                        `OVERRIDE_EXEC_DAT1: begin instruction_out = {instruction_in, instruction_out_exec[`I_EXEC_DAT2], val_op2}; end
+       // OTHER DEP DETECTED -> compute the instruction_out based on WB result or EXEC exec_out and reg block
+       if ((1'b0 == exec_dep_detected) || (1'b0 == wb_dep_detected) || (1'b0 == load_dep_detected)) begin
+            case(data_dep_op_sel)
+                `OVERRIDE_EXEC_0_DAT1: begin instruction_out = {instruction_in, instruction_out_exec_0[`I_EXEC_DAT2], val_op2}; end
+    
+                `OVERRIDE_EXEC_0_DAT2: begin instruction_out = {instruction_in, val_op1, instruction_out_exec_0[`I_EXEC_DAT2]}; end
+    
+                `OVERRIDE_EXEC_1_DAT1: begin instruction_out = {instruction_in, instruction_out_exec_1[`I_EXEC_DAT2], val_op2}; end
+    
+                `OVERRIDE_EXEC_1_DAT2: begin instruction_out = {instruction_in, val_op1, instruction_out_exec_1[`I_EXEC_DAT2]}; end
+    
+                `OVERRIDE_EXEC_2_DAT1: begin instruction_out = {instruction_in, instruction_out_exec_2[`I_EXEC_DAT2], val_op2}; end
+    
+                `OVERRIDE_EXEC_2_DAT2: begin instruction_out = {instruction_in, val_op1, instruction_out_exec_2[`I_EXEC_DAT2]}; end
+    
+                `OVERRIDE_EXEC_3_DAT1: begin instruction_out = {instruction_in, instruction_out_exec_3[`I_EXEC_DAT2], val_op2}; end
+    
+                `OVERRIDE_EXEC_3_DAT2: begin instruction_out = {instruction_in, val_op1, instruction_out_exec_3[`I_EXEC_DAT2]}; end
+    
+                `OVERRIDE_EXEC_FLOATING_3_DAT1: begin instruction_out = {instruction_in, instruction_out_exec_floating_3[`I_EXEC_DAT2], val_op2}; end
+    
+                `OVERRIDE_EXEC_FLOATING_3_DAT2: begin instruction_out = {instruction_in, val_op1, instruction_out_exec_floating_3[`I_EXEC_DAT2]}; end
+    
+                `OVERRIDE_RESREGS_DAT1: begin instruction_out = {instruction_in, result, val_op2}; end
+    
+                `OVERRIDE_RESREGS_DAT2: begin instruction_out = {instruction_in, val_op1, result}; end
+    
+           endcase
 
-                        `OVERRIDE_EXEC_DAT2: begin instruction_out = {instruction_in, val_op1, instruction_out_exec[`I_EXEC_DAT2]}; end
-
-                        `OVERRIDE_RESREGS_DAT1: begin instruction_out = {instruction_in, result, val_op2}; end
-
-                        `OVERRIDE_RESREGS_DAT2: begin instruction_out = {instruction_in, val_op1, result}; end
-
-                         /*  For load depencies, one first needs to first send a NOP
-                            through the pipeline and raise an internal flag load_dep_detected
-                            (this is because the mem needs 1 clk cycle to reply)
-                        */
-                        `OVERRIDE_MEM_DAT1: begin instruction_out = {`NOP, 32'd0, 32'd0}; end
-
-                        `OVERRIDE_MEM_DAT2: begin instruction_out = {`NOP, 32'd0, 32'd0}; end
-
-                    endcase
-
-               // NO DEP -> directly compute the instruction with the values from reg block
-               end else begin
-                    instruction_out = {instruction_in, val_op1, val_op2};
-               end
-            end
-
-            // LOAD DEP -> compute instruction out based on value from MEM and reg block
-            `OVERRIDE_MEM_DAT1: begin instruction_out = {instruction_in, data_in, val_op2}; end
-
-            `OVERRIDE_MEM_DAT2: begin instruction_out = {instruction_in, val_op1, data_in}; end
-
-       endcase
+           // NO DEP -> directly compute the instruction with the values from reg block
+           end else begin
+                instruction_out = {instruction_in, val_op1, val_op2};
+           end           
     end
 end
 
@@ -168,17 +171,6 @@ end
     -> to the EXEC_FLOATING_POINT (instruction_out_floating_point)
 */
 always @(posedge clk) begin
-
-    // LOAD_DEP combinational logic control
-    if (1'b0 == load_dep_detected) begin
-        // set the delay register with the override operand position IF load_dep_detected flag is raised
-        load_dep_op_sel <= data_dep_op_sel;
-    end else begin
-        // otherwise reset it to NONE
-        load_dep_op_sel <= `OVERRIDE_MEM_NONE;
-    end
-
-    // based on instruction_out opcode, go to -> EXEC or EXEC_FLOATING_POINT stage (they are in parallel)
     casex(instruction_out[`I_EXEC_OPCODE])
         `ADDF,
         `SUBF: begin
@@ -187,8 +179,8 @@ always @(posedge clk) begin
         end
 
         default: begin
-            instruction_out_read          = instruction_out;
             instruction_out_read_floating = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+            instruction_out_read          = instruction_out;
         end
     endcase
 end

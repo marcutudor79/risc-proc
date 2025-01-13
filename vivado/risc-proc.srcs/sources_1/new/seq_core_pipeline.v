@@ -130,7 +130,12 @@ read read
     // data_dep_op_selector <- from DATA_DEP_CTRL module
     .data_dep_op_sel(data_dep_op_sel),
     // instruction_out pipeline <- from EXEC stage
-    .instruction_out_exec(instruction_out_exec_3),
+    .instruction_out_exec_0(execute.instruction_out),
+    .instruction_out_exec_1(execute.instruction_out_exec_0),
+    .instruction_out_exec_2(execute.instruction_out_exec_1),
+    .instruction_out_exec_3(execute.instruction_out_exec_2),
+    // instruction_out pipeline <- from EXEC FLOATING stage
+    .instruction_out_exec_floating_3(execute_floating_point.instruction_out_exec_floating_2),
     // register result <- from WRITE_BACK stage
     .result(result),
     // data in value <- from MEM, external signal
@@ -274,14 +279,17 @@ data_dep_ctrl data_dep_ctrl
     // check the IN to READ stage and IN to EXEC stage
     .instruction_read_in(instruction_register_out),
     .instruction_exec_in(instruction_out_read),
+    .instruction_exec_floating_in(instruction_out_read_floating),
     // check the IN to READ stage and IN to WB stage
-    .instruction_wrback_in(instruction_out_exec),
+    .instruction_wrback_in_exec_0(execute.instruction_out_exec_0),
+    .instruction_wrback_in_exec_1(execute.instruction_out_exec_1),
+    .instruction_wrback_in_exec_2(execute.instruction_out_exec_2),
+    .instruction_wrback_in_exec_3(instruction_out_exec_3),
+    .instruction_wrback_in_floating_3(instruction_out_exec_floating_3),
     // read stage control
     .data_dep_op_sel(data_dep_op_sel),
     .exec_dep_detected(exec_dep_detected),
-    .wb_dep_detected(wb_dep_detected),
-    // fetch stage control
-    .load_dep_detected(load_dep_detected)
+    .wb_dep_detected(wb_dep_detected)
 );
 
 endmodule

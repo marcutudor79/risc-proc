@@ -36,7 +36,7 @@ module write_back(
     output reg [`REG_A_SIZE:0] destination_out,
     output reg [`D_SIZE-1:0]   result_out,
 
-    // fetch stage control
+    // read stage control
     output reg backpressure_write_back
 );
 
