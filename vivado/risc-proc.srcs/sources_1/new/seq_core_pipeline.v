@@ -44,6 +44,7 @@ wire jmp_detected;
 wire [`A_SIZE-1:0] jmp_pc;
 wire load_dep_detected;
 wire backpressure_write_back;
+wire backpressure_exec_floating_dep;
 
 fetch fetch
 (
@@ -78,7 +79,8 @@ fetch fetch
     /*
         FETCH STAGE CONTROL SIGNALS
     */
-    .backpressure_wb_concurrency(backpressure_write_back)
+    .backpressure_wb_concurrency(backpressure_write_back),
+    .backpressure_exec_floating_dep(backpressure_exec_floating_dep)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
@@ -283,11 +285,16 @@ data_dep_ctrl data_dep_ctrl
     .instruction_wrback_in_exec_1(execute.instruction_out_exec_1),
     .instruction_wrback_in_exec_2(execute.instruction_out_exec_2),
     .instruction_wrback_in_exec_3(instruction_out_exec_3),
+    .instruction_wrback_in_floating_0(execute_floating_point.instruction_out_exec_floating_0),
+    .instruction_wrback_in_floating_1(execute_floating_point.instruction_out_exec_floating_1),
+    .instruction_wrback_in_floating_2(execute_floating_point.instruction_out_exec_floating_2),
     .instruction_wrback_in_floating_3(instruction_out_exec_floating_3),
+
     // read stage control
     .data_dep_op_sel(data_dep_op_sel),
     .exec_dep_detected(exec_dep_detected),
-    .wb_dep_detected(wb_dep_detected)
+    .wb_dep_detected(wb_dep_detected),
+    .backpressure_exec_floating_dep(backpressure_exec_floating_dep)
 );
 
 endmodule

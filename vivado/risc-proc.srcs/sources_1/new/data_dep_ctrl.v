@@ -44,6 +44,9 @@ module data_dep_ctrl(
     input      [`I_EXEC_SIZE-1:0] instruction_wrback_in_exec_2,
     input      [`I_EXEC_SIZE-1:0] instruction_wrback_in_exec_3,
 
+    input      [`I_EXEC_SIZE-1:0] instruction_wrback_in_floating_0,
+    input      [`I_EXEC_SIZE-1:0] instruction_wrback_in_floating_1,
+    input      [`I_EXEC_SIZE-1:0] instruction_wrback_in_floating_2,
     input      [`I_EXEC_SIZE-1:0] instruction_wrback_in_floating_3
 );
 
@@ -55,6 +58,9 @@ wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_3;
 wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_4;
 wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_5;
 wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_6;
+wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_7;
+wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_8;
+wire [`OP_SEL_SIZE-1:0] data_dep_op_sel_9;
 
 wire exec_dep_detected_0;
 wire exec_dep_detected_1;
@@ -70,6 +76,7 @@ always @(*) begin
     // assume no dependency
     exec_dep_detected = 1'b1;
     wb_dep_detected   = 1'b1;
+    backpressure_exec_floating_dep = 1'b1;
     
     // dep is detected between READ IN & EXEC IN
     if (`OVERRIDE_NONE != data_dep_op_sel_0) begin
@@ -79,10 +86,20 @@ always @(*) begin
     
     // special case: if dep is detected between READ IN & EXEC FLOATING IN - backpressure the pipeline 3 clk cycles
     else if (`OVERRIDE_NONE != data_dep_op_sel_1) begin
-        data_dep_op_sel = data_dep_op_sel_1;
-        exec_dep_detected = exec_dep_detected_1;
-        
-        // ToDo backpressure the pipeline 3 clk cycles
+        backpressure_exec_floating_dep = 0;
+    end
+    
+    else if (`OVERRIDE_NONE != data_dep_op_sel_6) begin
+        backpressure_exec_floating_dep = 0;
+    end
+    
+    else if (`OVERRIDE_NONE != data_dep_op_sel_7) begin
+        backpressure_exec_floating_dep = 0;
+    end
+    
+    else if (`OVERRIDE_NONE != data_dep_op_sel_8) begin
+        data_dep_op_sel = data_dep_op_sel_9;
+        wb_dep_detected = wb_dep_detected_4;
     end
     
     // dep is detected between READ IN & EXEC OUT 0
@@ -185,17 +202,36 @@ compute_dep_wb read_in_exec_out_3
     .override_dat2(`OVERRIDE_RESREGS_DAT2)
 );
 
-// note: for the EXEC FLOATING stage, the result is only ready in
-// the last register out of the 4 delay registers
-compute_dep_wb read_in_exec_floating_out_3
+compute_dep_wb read_in_exec_floating_out_0
 (
     .instruction_read_in(instruction_read_in),
-    .instruction_wrback_in(instruction_wrback_in_floating_3),
-    .wb_dep_detected(wb_dep_detected_4),
+    .instruction_wrback_in(instruction_wrback_in_floating_0),
     .data_dep_op_sel(data_dep_op_sel_6),
     .override_dat1(`OVERRIDE_EXEC_FLOATING_3_DAT1),
     .override_dat2(`OVERRIDE_EXEC_FLOATING_3_DAT2)
 );
+
+compute_dep_wb read_in_exec_floating_out_1
+(
+    .instruction_read_in(instruction_read_in),
+    .instruction_wrback_in(instruction_wrback_in_floating_1),
+    .data_dep_op_sel(data_dep_op_sel_7),
+    .override_dat1(`OVERRIDE_EXEC_FLOATING_3_DAT1),
+    .override_dat2(`OVERRIDE_EXEC_FLOATING_3_DAT2)
+);
+
+// note: for the EXEC FLOATING stage, the result is only ready in
+// the last register out of the 4 delay registers
+compute_dep_wb read_in_exec_floating_out_2
+(
+    .instruction_read_in(instruction_read_in),
+    .instruction_wrback_in(instruction_wrback_in_floating_2),
+    .wb_dep_detected(wb_dep_detected4),
+    .data_dep_op_sel(data_dep_op_sel_8),
+    .override_dat1(`OVERRIDE_EXEC_FLOATING_3_DAT1),
+    .override_dat2(`OVERRIDE_EXEC_FLOATING_3_DAT2)
+);
+
 
 endmodule
 

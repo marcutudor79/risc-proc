@@ -42,6 +42,7 @@ module read(
     input wire [`OP_SEL_SIZE-1:0] data_dep_op_sel,
     input wire exec_dep_detected,
     input wire wb_dep_detected,
+    input wire backpressure_exec_floating_dep,
     
     // write_back_ctrl
     input wire backpressure_write_back,
@@ -194,7 +195,7 @@ always @(posedge clk) begin
         endcase
         
     // pipeline is backpressured by a concurrency at the input of WB stage
-    end else if (1'b0 == backpressure_write_back) begin
+    end else if ((1'b0 == backpressure_write_back) || ( 1'b0 == backpressure_exec_floating_dep)) begin
         instruction_out_read_floating <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};      
         instruction_out_read          <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};        
     end

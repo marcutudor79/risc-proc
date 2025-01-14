@@ -36,7 +36,8 @@ module fetch(
     input wire load_dep_detected,
     // fetch stage control
     input wire backpressure_wb_concurrency,
-    input wire backpressure_exec_load
+    input wire backpressure_exec_load,
+    input wire backpressure_exec_floating_dep
 );
 
 // internal variables of the fetch stage
@@ -72,7 +73,10 @@ always @(*) begin
        if backpressure_write_back is 0, the pipeline is stopped
        because the EXEC result needs to be written back to the registers
     */
-    else if ((1'b0 == backpressure_wb_concurrency) || (1'b0 == backpressure_exec_load)) begin
+    else if ((1'b0 == backpressure_wb_concurrency) || 
+             (1'b0 == backpressure_exec_load)      || 
+             (1'b0 == backpressure_exec_floating_dep))
+    begin
         pc                   = pc_out;
         exception_detected   = 1'b0;
         instruction_register = instruction_register_out;
