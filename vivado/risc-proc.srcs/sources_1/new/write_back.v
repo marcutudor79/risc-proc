@@ -43,7 +43,6 @@ module write_back(
 // internal variables of the WB stage
 reg [`REG_A_SIZE:0] destination;
 reg [`D_SIZE-1:0]   result;
-reg exception_floating_point;
 reg exception_backpressure;
 
 /*  1. Compute the destination and result based on:
@@ -51,9 +50,6 @@ reg exception_backpressure;
         - the instruction received from the EXEC_FPU stage
 */
 always @(*) begin
-
-    // assume that the result from EXEC_FLOATING_POINT is valid
-    exception_floating_point = 1'b1;
 
     // assume that no stopping of the pipeline is needed
     exception_backpressure = 1'b1;
@@ -72,35 +68,25 @@ always @(*) begin
        -> fetch result from EXEC_FPU instruction
     */
     else if ((`NOP == instruction_in[`I_EXEC_OPCODE]) || (`NOP != instruction_in_floating_point[`I_EXEC_OPCODE])) begin
-
-        if (1'b1 == exception_floating_point) begin
-            casex(instruction_in_floating_point[`I_EXEC_OPCODE])
-                `ADDF,
-                `SUBF: begin
-                    result      = instruction_in_floating_point[`I_EXEC_DAT2];
-                    destination = instruction_in_floating_point[`I_EXEC_OP0];
-                end
-                // should never enter default case
-                default: begin
-                    destination = `OUT_OF_BOUND_REG;
-                end
-            endcase
-        end
-
-        // if a 2nd situation was detected, invalidate the result from EXEC_FPU
-        else if (1'b0 == exception_floating_point) begin
-            destination = `OUT_OF_BOUND_REG;
-        end
+        casex(instruction_in_floating_point[`I_EXEC_OPCODE])
+            `ADDF,
+            `SUBF: begin
+                result      = instruction_in_floating_point[`I_EXEC_DAT2];
+                destination = instruction_in_floating_point[`I_EXEC_OP0];
+            end
+            // should never enter default case
+            default: begin
+                destination = `OUT_OF_BOUND_REG;
+            end
+        endcase
     end
 
     /* 2nd situation:
        ADD, SUB, AND, OR, XOR, NAND, NOR, NXOR, SHIFTR, SHIFTRA, SHIFTL, LOADC, LOAD is received from EXEC
        NOP is received from EXEC_FPU,
-       -> fetch result from EXEC instruction, the next EXEC_F result will not be taken into consideration
+       -> fetch result from EXEC instruction
     */
     else if ((`NOP != instruction_in[`I_EXEC_OPCODE]) || (`NOP == instruction_in_floating_point[`I_EXEC_OPCODE])) begin
-        exception_floating_point = 1'b0;
-
         casex(instruction_in[`I_EXEC_OPCODE])
             `ADD,
             `SUB,
@@ -200,17 +186,14 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
-
-    if (1'b0 == exception_backpressure) begin
-        backpressure_write_back <= 1'b0;
-    end
+    // sample the backpressure signal 
+    backpressure_write_back <= exception_backpressure;
 
     // sample the destionation
     destination_out <= destination;
 
     // sample the result
     result_out      <= result;
-
 end
 
 

@@ -3,22 +3,22 @@
 # SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
 # IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
 # SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
-# Start of session at: Tue Dec 17 10:40:03 2024
-# Process ID: 11172
+# Start of session at: Mon Jan 13 23:25:29 2025
+# Process ID: 36484
 # Current directory: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1
-# Command line: vivado.exe -log seq_core_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source seq_core_top.tcl
-# Log file: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1/seq_core_top.vds
+# Command line: vivado.exe -log seq_core_pipeline.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source seq_core_pipeline.tcl
+# Log file: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1/seq_core_pipeline.vds
 # Journal file: D:/_code/risc-proc/vivado/risc-proc.runs/synth_1\vivado.jou
 # Running On        :DESKTOP-GOP6HTO
 # Platform          :Windows Server 2016 or Windows 10
-# Operating System  :22631
+# Operating System  :26100
 # Processor Detail  :AMD Ryzen 7 4800H with Radeon Graphics         
 # CPU Frequency     :2895 MHz
 # CPU Physical cores:8
 # CPU Logical cores :16
 # Host memory       :25146 MB
-# Swap memory       :7247 MB
-# Total Virtual     :32394 MB
-# Available Virtual :13586 MB
+# Swap memory       :15569 MB
+# Total Virtual     :40715 MB
+# Available Virtual :10245 MB
 #-----------------------------------------------------------
-source seq_core_top.tcl -notrace
+source seq_core_pipeline.tcl -notrace

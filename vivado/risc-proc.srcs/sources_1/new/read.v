@@ -42,6 +42,9 @@ module read(
     input wire [`OP_SEL_SIZE-1:0] data_dep_op_sel,
     input wire exec_dep_detected,
     input wire wb_dep_detected,
+    
+    // write_back_ctrl
+    input wire backpressure_write_back,
 
     // fast forward from EXEC stage
     input wire [`I_EXEC_SIZE-1:0] instruction_out_exec_0,
@@ -170,18 +173,31 @@ end
     -> to the EXEC_FLOATING_POINT (instruction_out_floating_point)
 */
 always @(posedge clk) begin
-    casex(instruction_out[`I_EXEC_OPCODE])
-        `ADDF,
-        `SUBF: begin
-            instruction_out_read_floating = instruction_out;
-            instruction_out_read          = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
-        end
 
-        default: begin
-            instruction_out_read_floating = {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
-            instruction_out_read          = instruction_out;
-        end
-    endcase
+    if (1'b0 == rst) begin 
+        instruction_out_read          <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+        instruction_out_read_floating <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+    end
+    
+    else if (1'b1 == backpressure_write_back) begin
+        casex(instruction_out[`I_EXEC_OPCODE])
+            `ADDF,
+            `SUBF: begin
+                instruction_out_read_floating <= instruction_out;
+                instruction_out_read          <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+            end
+    
+            default: begin
+                instruction_out_read_floating <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
+                instruction_out_read          <= instruction_out;
+            end
+        endcase
+        
+    // pipeline is backpressured by a concurrency at the input of WB stage
+    end else if (1'b0 == backpressure_write_back) begin
+        instruction_out_read_floating <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};      
+        instruction_out_read          <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};        
+    end
 end
 
 endmodule

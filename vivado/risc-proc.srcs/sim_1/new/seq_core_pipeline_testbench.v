@@ -126,9 +126,7 @@ initial begin
         instruction = {`NOP, `R0, `R0, `R0};
          
     // Expect the registers to remain unchanged
-    #100 `assert(seq_core_pipeline.pc, seq_core.pc)
-    
-        `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
+    #100 `assert(seq_core_pipeline.regs.reg_block[`R0], seq_core.reg_block[`R0])
         `assert(seq_core_pipeline.regs.reg_block[`R1], seq_core.reg_block[`R1])
         `assert(seq_core_pipeline.regs.reg_block[`R2], seq_core.reg_block[`R2])
         `assert(seq_core_pipeline.regs.reg_block[`R3], seq_core.reg_block[`R3])

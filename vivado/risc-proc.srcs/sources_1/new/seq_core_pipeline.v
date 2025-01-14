@@ -136,7 +136,12 @@ read read
     // instruction_out pipeline <- from EXEC FLOATING stage
     .instruction_out_exec_floating_3(execute_floating_point.instruction_out_exec_floating_2),
     // register result <- from WRITE_BACK stage
-    .result(result)
+    .result(result),
+    
+    /*
+        WRITE BACK SONTROL
+    */
+    .backpressure_write_back(backpressure_write_back)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec_3;

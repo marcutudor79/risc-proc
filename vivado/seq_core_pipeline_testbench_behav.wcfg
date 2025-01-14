@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1,795.666 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,908.867 ns"></ZoomEndTime>
-      <Cursor1Time time="1,890.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="275.780 ns"></ZoomEndTime>
+      <Cursor1Time time="24.796 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="265"></NameColumnWidth>
-      <ValueColumnWidth column_width="156"></ValueColumnWidth>
+      <ValueColumnWidth column_width="152"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="25" />
+   <WVObjectSize size="26" />
    <wvobject fp_name="/seq_core_pipeline_testbench/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -83,6 +83,10 @@
    <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/regs/reg_block" type="array">
       <obj_property name="ElementShortName">reg_block[0:8][31:0]</obj_property>
       <obj_property name="ObjectShortName">reg_block[0:8][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/write_back/backpressure_write_back" type="logic">
+      <obj_property name="ElementShortName">backpressure_write_back</obj_property>
+      <obj_property name="ObjectShortName">backpressure_write_back</obj_property>
    </wvobject>
    <wvobject fp_name="/seq_core_pipeline_testbench/seq_core_pipeline/execute/backpressure_exec_load" type="logic">
       <obj_property name="ElementShortName">backpressure_exec_load</obj_property>
