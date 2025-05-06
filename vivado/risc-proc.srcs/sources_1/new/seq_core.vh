@@ -134,6 +134,14 @@
 `define I_EXEC_DAT2   `D_SIZE-1:0
 `define I_EXEC_DAT1   (2*`D_SIZE)-1:`D_SIZE
 
+// DATA SECTION FLOATING POINT s 1b | exp 8b | significand 23b 
+`define F_SIGNIFICAND       22:0
+`define F_EXPONENT          30:23
+`define F_SIGN              31
+`define F_SIGNIFICAND_SIZE  (23)
+`define F_EXP_SIZE          (8)
+`define F_MAX_EXPONENT      (8'b11111111)
+
 // DATA DEPENDENCY STAGE
 `define OP_SEL_SIZE        (5)
 `define DEP_SEL_SIZE       (2)

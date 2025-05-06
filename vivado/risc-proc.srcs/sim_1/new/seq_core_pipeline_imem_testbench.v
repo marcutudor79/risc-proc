@@ -417,7 +417,7 @@ initial begin
     imem_pipeline.mem[24] = {`NOP, `R0, `R0, `R0};
     imem_pipeline.mem[25] = {`HALT, 9'd0};
     
-        // check results
+    // check results
     #300
     `assert(seq_core_pipeline.regs.reg_block[`R1], 2)
     `assert(seq_core_pipeline.regs.reg_block[`R2], 0)

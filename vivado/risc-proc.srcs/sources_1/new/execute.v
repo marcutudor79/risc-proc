@@ -40,7 +40,10 @@ module execute(
     output reg               write_mem,
     
     // memory response
-    input [`D_SIZE-1:0] data_in
+    input [`D_SIZE-1:0] data_in,
+    
+    // memctrl interface
+    input cpu_rst
 );
 
 // internal variable to save the values
@@ -159,7 +162,7 @@ end
 
 // 2. Sample the value of instruction_out and serve it to WRITE_BACK stage
 always @(posedge clk) begin
-    if (1'b0 == rst) begin
+    if ((1'b0 == rst) || (1'b0 == cpu_rst)) begin
         instruction_out_exec_0 <= {`NOP, `R0, `R0, `R0};
         instruction_out_exec_1 <= {`NOP, `R0, `R0, `R0};
         instruction_out_exec_2 <= {`NOP, `R0, `R0, `R0};

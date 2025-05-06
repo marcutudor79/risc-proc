@@ -32,7 +32,12 @@ module seq_core_pipeline(
     output               write_mem,
     output [`A_SIZE-1:0] address,
     input  [`D_SIZE-1:0] data_in,
-    output [`D_SIZE-1:0] data_out
+    output [`D_SIZE-1:0] data_out,
+    // interface with mem_ctrl
+    input               cpu_rst, 
+    input               cpu_stop,
+    input               cpu_start,
+    output              cpu_status
 );
 
 
@@ -80,7 +85,15 @@ fetch fetch
         FETCH STAGE CONTROL SIGNALS
     */
     .backpressure_wb_concurrency(backpressure_write_back),
-    .backpressure_exec_floating_dep(backpressure_exec_floating_dep)
+    .backpressure_exec_floating_dep(backpressure_exec_floating_dep),
+    
+    /*
+        MEMCTRL SIGNALS 
+    */
+    .cpu_stop(cpu_stop),
+    .cpu_start(cpu_start),
+    .stop_detected(cpu_status),
+    .cpu_rst(cpu_rst)   
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_read;
@@ -92,6 +105,7 @@ wire [`D_SIZE-1:0] val_op2;
 wire [`OP_SEL_SIZE-1:0] data_dep_op_sel;
 wire exec_dep_detected;
 wire wb_dep_detected;
+wire [`D_SIZE-1:0] result;
 
 // 2nd STAGE
 read read
@@ -141,9 +155,14 @@ read read
     .result(result),
     
     /*
-        WRITE BACK SONTROL
+        WRITE BACK CONTROL
     */
-    .backpressure_write_back(backpressure_write_back)
+    .backpressure_write_back(backpressure_write_back),
+    
+    /* 
+        MEM CTRL SIGNALS 
+    */
+    .cpu_rst(cpu_rst) 
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec_3;
@@ -184,7 +203,12 @@ execute execute
     // control signals for mem -> to MEM module external
     .read_mem(read_mem),
     .write_mem(write_mem),
-    .data_in(data_in)
+    .data_in(data_in),
+    
+    /* 
+        MEM CTRL SIGNALS 
+    */
+    .cpu_rst(cpu_rst)
 );
 
 wire [`I_EXEC_SIZE-1:0] instruction_out_exec_floating_3;
@@ -204,11 +228,15 @@ execute_floating_point execute_floating_point
     // pipeline in <- from READ stage
     .instruction_in(instruction_out_read_floating),
     // pipeline out -> to WRITE_BACK stage
-    .instruction_out_exec_floating_3(instruction_out_exec_floating_3)
+    .instruction_out_exec_floating_3(instruction_out_exec_floating_3),
+    
+    /* 
+        MEM CTRL SIGNALS 
+    */
+    .cpu_rst(cpu_rst)
 );
 
 wire [`REG_A_SIZE:0] destination;
-wire [`D_SIZE-1:0] result;
 
 // 4th STAGE
 write_back write_back
@@ -257,7 +285,12 @@ regs regs
     .val_op2(val_op2),
     // input signals write_back stage
     .destination(destination),
-    .result(result)
+    .result(result),
+    
+    /* 
+        MEM CTRL SIGNALS 
+    */
+    .cpu_rst(cpu_rst)
 );
 
 /**************************************

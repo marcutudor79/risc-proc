@@ -38,7 +38,10 @@ module regs (
     
     // output signals 
     output reg [`D_SIZE-1:0] val_op1,
-    output reg [`D_SIZE-1:0] val_op2
+    output reg [`D_SIZE-1:0] val_op2,
+    
+    // memctrl signals
+    input cpu_rst
 );
 
 // define the registers memory
@@ -52,7 +55,7 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
-    if (1'b0 == rst) begin
+    if ((1'b0 == rst) || (1'b0 == cpu_rst)) begin
         reg_block[0] <= 32'd0;
         reg_block[1] <= 32'd0;
         reg_block[2] <= 32'd0;

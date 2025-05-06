@@ -37,13 +37,29 @@ module fetch(
     // fetch stage control
     input wire backpressure_wb_concurrency,
     input wire backpressure_exec_load,
-    input wire backpressure_exec_floating_dep
+    input wire backpressure_exec_floating_dep,
+    // mem ctrl control
+    input cpu_stop,
+    input cpu_start,
+    output reg stop_detected,
+    input cpu_rst
 );
 
 // internal variables of the fetch stage
 reg [`I_SIZE-1:0] instruction_register;
 reg [`A_SIZE-1:0] pc;
 reg exception_detected;
+
+/*
+    0. Check for cpu start and stop commands
+*/
+always @(*) begin
+    if (1'b0 == cpu_stop) begin
+        stop_detected = 0;
+    end else if (1'b0 == cpu_start) begin
+        stop_detected = 1;
+    end 
+end
 
 /*
     1. Compute the IR and PC based on the jmp, load and rst signals
@@ -86,12 +102,20 @@ always @(*) begin
     */
     else if (`HALT == instruction) begin
         pc                 = pc_out;
+        stop_detected      = 0;
         exception_detected = 1'b0;
     end
 
     /* if rst is triggered, pc starts from 0
     */
     else if (1'b0 == rst) begin
+        pc                 = 0;
+        exception_detected = 1'b0;
+    end
+    
+    /* if mem_ctrl issues a cpu_rst, pc starts from 0
+    */
+    else if (1'b0 == cpu_rst) begin
         pc                 = 0;
         exception_detected = 1'b0;
     end
@@ -108,6 +132,11 @@ always @(posedge clk) begin
     // on exeption, sample the computed pc
     if (1'b0 == exception_detected) begin
         pc_out <= pc;
+    end
+    
+    // on stop command from mem_ctrl, stop the cpu from fetching
+    else if (1'b0 == stop_detected) begin
+        pc_out <= pc_out;
     end
 
     // otherwise continue executing

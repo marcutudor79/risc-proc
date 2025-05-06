@@ -58,7 +58,10 @@ module read(
 
     // fast forward from WB stage
     input wire [`D_SIZE-1:0] result,
-    input wire [`D_SIZE-1:0] data_in
+    input wire [`D_SIZE-1:0] data_in,
+    
+    // memctrl interface
+    input cpu_rst
 );
 
 /* internal variable to save the computed instruction
@@ -175,7 +178,7 @@ end
 */
 always @(posedge clk) begin
 
-    if (1'b0 == rst) begin 
+    if ((1'b0 == rst) || (1'b0 == cpu_rst)) begin 
         instruction_out_read          <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
         instruction_out_read_floating <= {`NOP, `R0, `R0, `R0, 32'd0, 32'd0};
     end
