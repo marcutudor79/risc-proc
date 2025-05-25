@@ -32,18 +32,41 @@ initial begin
     rst = 1;
     #10 rst = 0;
 
+    // Results computed with: https://www.h-schmidt.net/FloatConverter/IEEE754.html
     // Test: 1.0 + 1.0 (assuming IEEE-754 single precision)
+    instruction_in[`I_EXEC_INSTR] = {`ADDF, `R0, `R0, `R1};
     instruction_in[`I_EXEC_DAT1] = 32'h3F800000; // 1.0
     instruction_in[`I_EXEC_DAT2] = 32'h3F800000; // 1.0
-    
-    #50; // EXPECT 40000000
+
+    #50; // EXPECT result_out = 40000000 [x] 2.0
 
     // Test: 1.0 + 1.5 (assuming IEEE-754 single precision)
+    instruction_in[`I_EXEC_INSTR] = {`ADDF, `R0, `R0, `R1};
     instruction_in[`I_EXEC_DAT1] = 32'h3F800000; // 1.0
     instruction_in[`I_EXEC_DAT2] = 32'h3FC00000; // 1.5
 
-    #50;
+    #50; // EXPECT result_out = 40200000 [x] 2.5
 
+    // Test: 1.0 + INF (assuming IEEE-754 single precision)
+    instruction_in[`I_EXEC_INSTR] = {`ADDF, `R0, `R0, `R1};
+    instruction_in[`I_EXEC_DAT1] = 32'h3F800000; // 1.0
+    instruction_in[`I_EXEC_DAT2] = 32'h7f800000; // INF
+
+    #50; // EXPECT result_out = 7f800000 [x] INF
+
+    // Test: 1.0 + NaN (assuming IEEE-754 single precision)
+    instruction_in[`I_EXEC_INSTR] = {`ADDF, `R0, `R0, `R1};
+    instruction_in[`I_EXEC_DAT1] = 32'h3F800000; // 1.0
+    instruction_in[`I_EXEC_DAT2] = 32'h7f800001; // NaN
+
+    #50; // EXPECT result_out = 7fc00000 [x] NaN
+
+    // Test: 1.0 - 1.0 (assuming IEEE-754 single precision)
+    instruction_in[`I_EXEC_INSTR] = {`SUBF, `R0, `R0, `R1};
+    instruction_in[`I_EXEC_DAT1] = 32'h3FC00000; // 1.5
+    instruction_in[`I_EXEC_DAT2] = 32'h3F800000; // 1.0
+    
+    #50; // EXPECT result_out = 00400000 [x] 0.5
 end
 
 endmodule

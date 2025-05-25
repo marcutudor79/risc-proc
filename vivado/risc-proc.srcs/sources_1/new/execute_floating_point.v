@@ -52,8 +52,8 @@ reg [`D_SIZE-1:0] operand2;
 
 reg [`F_EXP_SIZE-1:0] exp_max;
 reg [`F_EXP_SIZE-1:0] exp_diff;
-reg [`F_SIGNIFICAND_SIZE-1:0] signif1_aligned;
-reg [`F_SIGNIFICAND_SIZE-1:0] signif2_aligned;
+reg [`F_SIGNIFICAND_SIZE+1:0] signif1_aligned;
+reg [`F_SIGNIFICAND_SIZE+1:0] signif2_aligned;
 
 reg carry;
 
@@ -104,6 +104,7 @@ always @(*) begin
         signif2_aligned = {operand1[`F_SIGNIFICAND], 2'b00} >> (operand2[`F_EXPONENT] - operand1[`F_EXPONENT]);
      end
 
+     // ToDo: Invert significand in 2's complement for substraction
 end
 
 
@@ -191,11 +192,11 @@ always @(*) begin
 
     // shift significand until it gets into format 1.bbbb
     if (-1 == $signed(shift_pos))
-        normalized_significand = signif_sum_stable >> 1;
+        normalized_significand = signif_sum_stable[26:2] >> 1;
     else
-        normalized_significand = signif_sum_stable << shift_pos_stable;
+        normalized_significand = signif_sum_stable[26:2] << shift_pos_stable;
 
-     case (add_case)
+    case (add_case)
         `F_ADD_OK: begin
             result = {operand1[`F_SIGN], result_exp_stable, normalized_significand};
         end
