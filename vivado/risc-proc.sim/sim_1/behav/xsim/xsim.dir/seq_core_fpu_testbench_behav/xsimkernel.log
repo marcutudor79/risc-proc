@@ -1,0 +1,4 @@
+Running: xsim.dir/seq_core_fpu_testbench_behav/xsimk.exe -simmode gui -wdb seq_core_fpu_testbench_behav.wdb -simrunnum 0 -socket 45983
+Design successfully loaded
+Design Loading Memory Usage: 32288 KB (Peak: 32288 KB)
+Design Loading CPU Usage: 859 ms

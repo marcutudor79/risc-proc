@@ -3,65 +3,82 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="seq_core_pipeline_imem_testbench_behav.wdb" id="1">
+      <db_ref path="seq_core_fpu_testbench_behav.wdb" id="1">
          <top_modules>
             <top_module name="glbl" />
-            <top_module name="seq_core_pipeline_imem_testbench" />
+            <top_module name="seq_core_fpu_testbench" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1,699.734 ns"></ZoomStartTime>
-      <ZoomEndTime time="2,060.054 ns"></ZoomEndTime>
-      <Cursor1Time time="2,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="4.787 ns"></ZoomStartTime>
+      <ZoomEndTime time="71.043 ns"></ZoomEndTime>
+      <Cursor1Time time="60.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="265"></NameColumnWidth>
-      <ValueColumnWidth column_width="144"></ValueColumnWidth>
+      <NameColumnWidth column_width="244"></NameColumnWidth>
+      <ValueColumnWidth column_width="222"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="11" />
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/clk" type="logic">
+   <WVObjectSize size="14" />
+   <wvobject fp_name="/seq_core_fpu_testbench/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/operand1" type="array">
+      <obj_property name="ElementShortName">operand1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">operand1[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/imem_pipeline/pc" type="array">
-      <obj_property name="ElementShortName">pc[9:0]</obj_property>
-      <obj_property name="ObjectShortName">pc[9:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/operand2" type="array">
+      <obj_property name="ElementShortName">operand2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">operand2[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/imem_pipeline/instruction" type="array">
-      <obj_property name="ElementShortName">instruction[15:0]</obj_property>
-      <obj_property name="ObjectShortName">instruction[15:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/add_case" type="array">
+      <obj_property name="ElementShortName">add_case[1:0]</obj_property>
+      <obj_property name="ObjectShortName">add_case[1:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/seq_core_pipeline/fetch/instruction" type="array">
-      <obj_property name="ElementShortName">instruction[15:0]</obj_property>
-      <obj_property name="ObjectShortName">instruction[15:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/signif1_aligned_stable" type="array">
+      <obj_property name="ElementShortName">signif1_aligned_stable[24:0]</obj_property>
+      <obj_property name="ObjectShortName">signif1_aligned_stable[24:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/seq_core_pipeline/fetch/instruction_register_out" type="array">
-      <obj_property name="ElementShortName">instruction_register_out[15:0]</obj_property>
-      <obj_property name="ObjectShortName">instruction_register_out[15:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/signif1_aligned_stable" type="array">
+      <obj_property name="ElementShortName">signif1_aligned_stable[24:0]</obj_property>
+      <obj_property name="ObjectShortName">signif1_aligned_stable[24:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/seq_core_pipeline/read/instruction_out_read" type="array">
-      <obj_property name="ElementShortName">instruction_out_read[79:0]</obj_property>
-      <obj_property name="ObjectShortName">instruction_out_read[79:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/exp_max_stable" type="array">
+      <obj_property name="ElementShortName">exp_max_stable[7:0]</obj_property>
+      <obj_property name="ObjectShortName">exp_max_stable[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/seq_core_pipeline/execute/instruction_out_exec_3" type="array">
-      <obj_property name="ElementShortName">instruction_out_exec_3[79:0]</obj_property>
-      <obj_property name="ObjectShortName">instruction_out_exec_3[79:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/carry_stable" type="logic">
+      <obj_property name="ElementShortName">carry_stable</obj_property>
+      <obj_property name="ObjectShortName">carry_stable</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/seq_core_pipeline/write_back/instruction_in" type="array">
-      <obj_property name="ElementShortName">instruction_in[79:0]</obj_property>
-      <obj_property name="ObjectShortName">instruction_in[79:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/signif_sum" type="array">
+      <obj_property name="ElementShortName">signif_sum[26:0]</obj_property>
+      <obj_property name="ObjectShortName">signif_sum[26:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/seq_core_pipeline/regs/reg_block" type="array">
-      <obj_property name="ElementShortName">reg_block[0:8][31:0]</obj_property>
-      <obj_property name="ObjectShortName">reg_block[0:8][31:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/signif_sum_stable" type="array">
+      <obj_property name="ElementShortName">signif_sum_stable[26:0]</obj_property>
+      <obj_property name="ObjectShortName">signif_sum_stable[26:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/seq_core_pipeline_imem_testbench/imem_pipeline/mem" type="array">
-      <obj_property name="ElementShortName">mem[0:1023][31:0]</obj_property>
-      <obj_property name="ObjectShortName">mem[0:1023][31:0]</obj_property>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/pos" type="array">
+      <obj_property name="ElementShortName">pos[4:0]</obj_property>
+      <obj_property name="ObjectShortName">pos[4:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/shift_pos_stable" type="array">
+      <obj_property name="ElementShortName">shift_pos_stable[4:0]</obj_property>
+      <obj_property name="ObjectShortName">shift_pos_stable[4:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/result_exp_stable" type="array">
+      <obj_property name="ElementShortName">result_exp_stable[7:0]</obj_property>
+      <obj_property name="ObjectShortName">result_exp_stable[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/seq_core_fpu_testbench/execute_fp/result_out" type="array">
+      <obj_property name="ElementShortName">result_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">result_out[31:0]</obj_property>
    </wvobject>
 </wave_config>
